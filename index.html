@@ -59,25 +59,36 @@
 
     <main>
       <section class="hero" id="intro">
-        <p class="eyebrow" data-i18n="heroKicker"></p>
-        <h1 class="hero__name">
-          <span data-i18n="heroName">Junyan Lin</span>
-          <span class="hero__aka" data-i18n="heroAka">Chris</span>
-        </h1>
-        <p class="hero__lead" data-i18n="heroLead"></p>
-        <div class="hero__now">
-          <span class="pulse" aria-hidden="true"></span>
-          <span>
-            <strong data-i18n="heroNow">Currently</strong>
-            <span data-i18n="heroNowBody"></span>
-          </span>
+        <div class="hero__text">
+          <p class="eyebrow" data-i18n="heroKicker"></p>
+          <h1 class="hero__name">
+            <span data-i18n="heroName" data-split>Junyan Lin</span>
+            <span class="hero__aka" data-i18n="heroAka">Chris</span>
+          </h1>
+          <p class="hero__lead" data-i18n="heroLead"></p>
+          <div class="hero__now">
+            <span class="pulse" aria-hidden="true"></span>
+            <span>
+              <strong data-i18n="heroNow">Currently</strong>
+              <span data-i18n="heroNowBody"></span>
+            </span>
+          </div>
+          <div class="hero__cta">
+            <a class="btn" href="#work" data-magnetic data-i18n="heroCtaWork">View projects</a>
+            <button class="btn btn--ghost" type="button" data-open-first data-magnetic data-i18n="heroCtaNote">
+              Open the first project
+            </button>
+          </div>
         </div>
-        <div class="hero__cta">
-          <a class="btn" href="#work" data-magnetic data-i18n="heroCtaWork">View projects</a>
-          <button class="btn btn--ghost" type="button" data-open-first data-magnetic data-i18n="heroCtaNote">
-            Open the first project
-          </button>
-        </div>
+        <figure class="hero__photo" data-portrait>
+          <div class="hero__photo-frame">
+            <img src="./work/portrait.jpg" alt="Junyan Lin" width="640" height="800" fetchpriority="high" />
+          </div>
+          <figcaption>
+            <span data-i18n="heroPhotoCap">Singapore &middot; 2026</span>
+            <span aria-hidden="true">&#x6797;</span>
+          </figcaption>
+        </figure>
       </section>
 
       <div class="ticker" aria-hidden="true">
@@ -86,11 +97,11 @@
 
       <section class="about" id="about">
         <div class="about__text">
-          <p class="eyebrow" data-i18n="aboutEyebrow"></p>
-          <h2 class="display" data-i18n="aboutTitle"></h2>
-          <p class="about__body" data-i18n="aboutBody"></p>
+          <p class="eyebrow" data-i18n="aboutEyebrow" data-reveal></p>
+          <h2 class="display" data-i18n="aboutTitle" data-split></h2>
+          <p class="about__body" data-i18n="aboutBody" data-reveal style="--i: 2"></p>
         </div>
-        <figure class="about__school">
+        <figure class="about__school" data-reveal style="--i: 4">
           <img src="./work/smu-logo.svg" alt="Singapore Management University" width="180" height="78" />
           <figcaption data-i18n="aboutSchool"></figcaption>
         </figure>
@@ -99,12 +110,12 @@
 
       <section class="work" id="work">
         <div class="work__index">
-          <p class="eyebrow" data-i18n="workEyebrow"></p>
-          <h2 class="display display--sm" data-i18n="workTitle">Projects</h2>
-          <p class="hint" data-i18n="workHint"></p>
+          <p class="eyebrow" data-i18n="workEyebrow" data-reveal></p>
+          <h2 class="display display--sm" data-i18n="workTitle" data-split>Projects</h2>
+          <p class="hint" data-i18n="workHint" data-reveal style="--i: 2"></p>
           <ol class="work-list" data-work-list></ol>
         </div>
-        <aside class="work__preview" data-work-preview>
+        <aside class="work__preview" data-work-preview data-reveal style="--i: 3">
           <button class="work-preview__cover" type="button" data-preview-open data-cursor="Open">
             <img data-preview-img alt="" />
           </button>
@@ -120,39 +131,39 @@
       </section>
 
       <section class="practice" id="practice">
-        <p class="eyebrow eyebrow--light" data-i18n="practiceEyebrow"></p>
-        <h2 class="display display--light" data-i18n="practiceTitle">Experience</h2>
+        <p class="eyebrow eyebrow--light" data-i18n="practiceEyebrow" data-reveal></p>
+        <h2 class="display display--light" data-i18n="practiceTitle" data-split>Experience</h2>
         <div class="practice__list" data-practice></div>
       </section>
 
       <section class="index-sec" id="index">
-        <p class="eyebrow" data-i18n="indexEyebrow"></p>
-        <h2 class="display display--sm" data-i18n="indexTitle">Skills and tools</h2>
+        <p class="eyebrow" data-i18n="indexEyebrow" data-reveal></p>
+        <h2 class="display display--sm" data-i18n="indexTitle" data-split>Skills and tools</h2>
         <div class="skill-grid" data-skills></div>
       </section>
 
       <section class="contact" id="contact">
-        <p class="eyebrow" data-i18n="contactEyebrow"></p>
-        <h2 class="display" data-i18n="contactTitle">Get in touch</h2>
-        <p class="contact__body" data-i18n="contactBody"></p>
+        <p class="eyebrow" data-i18n="contactEyebrow" data-reveal></p>
+        <h2 class="display" data-i18n="contactTitle" data-split>Get in touch</h2>
+        <p class="contact__body" data-i18n="contactBody" data-reveal style="--i: 2"></p>
         <ul class="contact__list">
-          <li>
+          <li data-reveal style="--i: 3">
             <span data-i18n="contactEmail">Email</span>
             <a href="mailto:junyan.lin.2024@business.smu.edu.sg">junyan.lin.2024@business.smu.edu.sg</a>
           </li>
-          <li>
+          <li data-reveal style="--i: 4">
             <span data-i18n="contactPhone">Singapore</span>
             <a href="tel:+6586217039">+65 8621 7039</a>
           </li>
-          <li>
+          <li data-reveal style="--i: 5">
             <span data-i18n="contactPhoneCn">China</span>
             <a href="tel:+8618529524213">+86 185 2952 4213</a>
           </li>
-          <li>
+          <li data-reveal style="--i: 6">
             <span data-i18n="contactLi">LinkedIn</span>
             <a href="https://www.linkedin.com/in/junyan-lin-95b7233ab" target="_blank" rel="noreferrer">linkedin.com/in/junyan-lin</a>
           </li>
-          <li>
+          <li data-reveal style="--i: 7">
             <span data-i18n="contactWechat">WeChat</span>
             <button class="copy" type="button" data-copy="CHRIS_LJY_ATB">
               <span>CHRIS_LJY_ATB</span>
@@ -160,7 +171,7 @@
             </button>
           </li>
         </ul>
-        <p class="footer-note" data-i18n="footerNote"></p>
+        <p class="footer-note" data-i18n="footerNote" data-reveal></p>
       </section>
     </main>
 

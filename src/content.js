@@ -21,6 +21,7 @@ export const copy = {
     heroKicker: "SMU · Quantitative Finance · Class of 2028",
     heroName: "Junyan Lin",
     heroAka: "Chris",
+    heroPhotoCap: "Singapore · 2026",
     heroLead:
       "Third-year Quantitative Finance student at SMU, from Shenzhen and based in Singapore. Currently interning in corporate banking at Bank of China (Singapore), and into vibe coding — building things like this site. Outside that: films, basketball and music.",
     heroNow: "Currently",
@@ -88,6 +89,7 @@ export const copy = {
     heroKicker: "新加坡管理大学 · 量化金融 · 2028 届",
     heroName: "林峻延",
     heroAka: "Chris",
+    heroPhotoCap: "新加坡 · 2026",
     heroLead:
       "新加坡管理大学量化金融大三，深圳人，现居新加坡。目前在中国银行新加坡分行做公司金融实习，也喜欢钻研 vibe coding，比如这个网站。此外还爱看电影、打篮球、听音乐。",
     heroNow: "目前",

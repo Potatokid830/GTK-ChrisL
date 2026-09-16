@@ -3,12 +3,16 @@ import { copy, experience, skills, works } from './content.js'
 
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+// Hidden start states in the CSS are scoped to html.js, so nothing stays invisible without JS.
+document.documentElement.classList.add('js')
 
 const state = {
   lang: localStorage.getItem('jl-lang') === 'zh' ? 'zh' : 'en',
   work: 0,
   caseIdx: null,
   lenis: null,
+  ready: false,
+  previewToken: 0,
 }
 
 const $ = (sel, root = document) => root.querySelector(sel)
@@ -34,6 +38,114 @@ function applyCopy() {
   renderSkills()
   setPreview(state.work)
   if (state.caseIdx != null) renderCase()
+  splitHeadings()
+  observeReveals()
+}
+
+/* ---------- motion helpers ---------- */
+
+const CJK_PUNCT = /[\u3001\u3002\uFF0C\uFF1A\uFF1B\uFF01\uFF1F\uFF09\u300B\u300D\u300F\u2026\u2014]/
+
+// Wrap each word (or each CJK character, keeping trailing punctuation attached)
+// in a masked span so the heading can rise out line by line.
+function splitWords(el) {
+  const text = el.textContent.trim()
+  if (!text) return
+  let parts
+  if (/\s/.test(text)) {
+    parts = text.split(/\s+/)
+  } else {
+    parts = []
+    for (const ch of Array.from(text)) {
+      if (CJK_PUNCT.test(ch) && parts.length) parts[parts.length - 1] += ch
+      else parts.push(ch)
+    }
+  }
+  const joiner = /\s/.test(text) ? ' ' : ''
+  el.innerHTML = parts
+    .map((w, i) => `<span class="w" style="--i:${Math.min(i, 14)}"><span>${esc(w)}</span></span>`)
+    .join(joiner)
+  el.setAttribute('aria-label', text) // screen readers get the unbroken heading
+  el.classList.add('split')
+}
+
+function splitHeadings() {
+  $$('[data-split]').forEach((el) => {
+    const wasIn = el.classList.contains('is-in')
+    splitWords(el)
+    if (wasIn) el.classList.add('is-in')
+  })
+}
+
+let revealIo = null
+function observeReveals() {
+  if (reduced) {
+    $$('[data-reveal], .split').forEach((el) => el.classList.add('is-in'))
+    return
+  }
+  if (!revealIo) {
+    revealIo = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((en) => {
+          if (!en.isIntersecting) return
+          en.target.classList.add('is-in')
+          revealIo.unobserve(en.target)
+        })
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
+    )
+  }
+  $$('[data-reveal]:not(.is-in), .split:not(.is-in)').forEach((el) => {
+    if (el.closest('.hero') || el.closest('.dossier')) return
+    // After a language switch, things already on screen should just update, not re-enter.
+    if (state.ready && el.getBoundingClientRect().top < innerHeight) {
+      el.classList.add('is-in')
+      return
+    }
+    revealIo.observe(el)
+  })
+}
+
+function heroIn() {
+  const hero = $('.hero')
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    hero.classList.add('is-in')
+    $$('.hero .split').forEach((el) => el.classList.add('is-in'))
+    state.ready = true
+  }))
+}
+
+// The portrait drifts a little against the pointer and lags the scroll.
+function bindPortrait() {
+  const fig = $('[data-portrait]')
+  if (!fig || reduced) return
+  const target = { x: 0, y: 0 }
+  const cur = { x: 0, y: 0 }
+  let scrollY = 0
+  let raf = 0
+  // On phones the portrait sits above the name, so it must not drift into it.
+  const lagOn = window.matchMedia('(min-width: 761px)').matches
+  const tick = () => {
+    cur.x += (target.x - cur.x) * 0.06
+    cur.y += (target.y - cur.y) * 0.06
+    const lag = lagOn ? Math.min(scrollY, innerHeight) * 0.08 : 0
+    fig.style.transform = `translate3d(${cur.x.toFixed(2)}px, ${(cur.y + lag).toFixed(2)}px, 0)`
+    raf = Math.abs(target.x - cur.x) + Math.abs(target.y - cur.y) > 0.05 ? requestAnimationFrame(tick) : 0
+  }
+  const kick = () => { if (!raf) raf = requestAnimationFrame(tick) }
+  if (finePointer) {
+    window.addEventListener('mousemove', (e) => {
+      target.x = (e.clientX / innerWidth - 0.5) * -18
+      target.y = (e.clientY / innerHeight - 0.5) * -12
+      kick()
+    }, { passive: true })
+  }
+  const onScroll = () => {
+    scrollY = window.scrollY
+    kick()
+  }
+  if (state.lenis) state.lenis.on('scroll', onScroll)
+  else window.addEventListener('scroll', onScroll, { passive: true })
 }
 
 function renderRail() {
@@ -52,7 +164,7 @@ function renderTicker() {
 
 function renderFigures() {
   $('[data-figures]').innerHTML = t()
-    .figures.map(([k, v]) => `<li><small>${esc(k)}</small><strong>${esc(v)}</strong></li>`)
+    .figures.map(([k, v], i) => `<li data-reveal style="--i:${i}"><small>${esc(k)}</small><strong>${esc(v)}</strong></li>`)
     .join('')
 }
 
@@ -60,7 +172,7 @@ function renderWork() {
   $('[data-work-list]').innerHTML = works
     .map((w, i) => {
       const c = w[state.lang]
-      return `<li>
+      return `<li data-reveal style="--i:${i + 2}">
         <button class="work-item ${i === state.work ? 'is-on' : ''}" type="button" data-work="${i}" data-cursor="Open">
           <span class="no">${w.no}</span>
           <span class="title">${esc(c.title)}</span>
@@ -75,24 +187,38 @@ function setPreview(i) {
   state.work = i
   const w = works[i]
   const c = w[state.lang]
-  $('[data-preview-no]').textContent = w.no
-  const stamp = $('[data-preview-stamp]')
-  stamp.textContent = c.stamp
-  stamp.classList.toggle('is-buy', w.id === 'heineken')
-  $('[data-preview-figure]').textContent = c.figure
-  $('[data-preview-label]').textContent = c.figureLabel
-  $('[data-preview-dek]').textContent = c.preview
-  const img = $('[data-preview-img]')
-  img.src = w.slides[0].src
-  img.alt = c.title
+  const card = $('[data-work-preview]')
   $$('[data-work]').forEach((btn) => btn.classList.toggle('is-on', Number(btn.dataset.work) === i))
+
+  const apply = () => {
+    $('[data-preview-no]').textContent = w.no
+    const stamp = $('[data-preview-stamp]')
+    stamp.textContent = c.stamp
+    stamp.classList.toggle('is-buy', w.id === 'heineken')
+    $('[data-preview-figure]').textContent = c.figure
+    $('[data-preview-label]').textContent = c.figureLabel
+    $('[data-preview-dek]').textContent = c.preview
+    const img = $('[data-preview-img]')
+    img.src = w.slides[0].src
+    img.alt = c.title
+  }
+
+  // First paint and reduced motion: swap in place. Otherwise fade out, swap, fade back.
+  if (reduced || !state.ready) { apply(); return }
+  const token = ++state.previewToken
+  card.classList.add('is-switching')
+  window.setTimeout(() => {
+    if (token !== state.previewToken) return
+    apply()
+    requestAnimationFrame(() => requestAnimationFrame(() => card.classList.remove('is-switching')))
+  }, 180)
 }
 
 function renderPractice() {
   $('[data-practice]').innerHTML = experience
-    .map((job) => {
+    .map((job, i) => {
       const c = job[state.lang]
-      return `<article class="practice-card">
+      return `<article class="practice-card" data-reveal style="--i:${i}">
         <p class="meta">${esc(c.dates)}<br>${esc(c.place)}</p>
         <div>
           <h3>${esc(c.role)}</h3>
@@ -107,9 +233,9 @@ function renderPractice() {
 
 function renderSkills() {
   $('[data-skills]').innerHTML = skills
-    .map((s) => {
+    .map((s, i) => {
       const c = s[state.lang]
-      return `<article class="skill"><h3>${esc(c.group)}</h3><ul>${c.items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul></article>`
+      return `<article class="skill" data-reveal style="--i:${i + 1}"><h3>${esc(c.group)}</h3><ul>${c.items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul></article>`
     })
     .join('')
 }
@@ -226,6 +352,7 @@ function openCase(idx) {
   const root = $('[data-dossier]')
   root.hidden = false
   document.body.classList.add('is-case')
+  $('[data-cursor-badge]')?.classList.remove('is-on')
   state.lenis?.stop()
   requestAnimationFrame(() => root.classList.add('is-open'))
   root.scrollTop = 0
@@ -277,6 +404,10 @@ function renderCase() {
     </section>
   `
   bindWidgets(body)
+  const title = $('.d-title', body)
+  splitWords(title)
+  if (reduced) title.classList.add('is-in')
+  else window.setTimeout(() => title.classList.add('is-in'), 250)
 }
 
 function closeCase() {
@@ -332,13 +463,18 @@ function bindCursor() {
 function bindMagnetic() {
   if (!finePointer || reduced) return
   $$('[data-magnetic]').forEach((el) => {
+    el.addEventListener('mouseenter', () => { el.style.transition = 'transform 0.2s ease-out' })
     el.addEventListener('mousemove', (e) => {
       const r = el.getBoundingClientRect()
       const x = e.clientX - r.left - r.width / 2
       const y = e.clientY - r.top - r.height / 2
       el.style.transform = `translate(${x * 0.18}px, ${y * 0.22}px)`
     })
-    el.addEventListener('mouseleave', () => { el.style.transform = '' })
+    // spring back instead of snapping
+    el.addEventListener('mouseleave', () => {
+      el.style.transition = 'transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)'
+      el.style.transform = ''
+    })
   })
 }
 
@@ -382,6 +518,7 @@ function finishLoader() {
   const root = $('[data-loader]')
   if (!root) return
   root.classList.add('is-out')
+  heroIn()
   window.setTimeout(() => {
     root.remove()
     document.body.classList.remove('is-loading')
@@ -395,6 +532,7 @@ function loader() {
   sessionStorage.setItem('jl-seen', '1')
   if (reduced || seen) {
     $('[data-loader]')?.remove()
+    heroIn()
     return
   }
   document.body.classList.add('is-loading')
@@ -477,4 +615,6 @@ bindUi()
 bindCursor()
 bindMagnetic()
 bindScroll()
+bindPortrait()
+works.forEach((w) => { const im = new Image(); im.src = w.slides[0].src })
 loader()
