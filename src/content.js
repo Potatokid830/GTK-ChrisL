@@ -23,7 +23,7 @@ export const copy = {
     heroAka: "Chris",
     heroPhotoCap: "Singapore · 2026",
     heroLead:
-      "Third-year Quantitative Finance student at SMU, from Shenzhen and based in Singapore. Currently interning in corporate banking at Bank of China (Singapore), and into vibe coding — building things like this site. Outside that: films, basketball and music.",
+      "Third-year Quantitative Finance student at SMU, from Shenzhen and based in Singapore. Currently interning in corporate banking at Bank of China (Singapore), and into vibe coding — building things like this site. Outside that: films, basketball, and DJing hip-hop sets on the side.",
     heroNow: "Currently",
     heroNowBody: "Relationship Manager Intern, Global Corporate Banking, Bank of China (Singapore) · Aug–Nov 2026",
     heroCtaWork: "View projects",
@@ -91,7 +91,7 @@ export const copy = {
     heroAka: "Chris",
     heroPhotoCap: "新加坡 · 2026",
     heroLead:
-      "新加坡管理大学量化金融大三，深圳人，现居新加坡。目前在中国银行新加坡分行做公司金融实习，也喜欢钻研 vibe coding，比如这个网站。此外还爱看电影、打篮球、听音乐。",
+      "新加坡管理大学量化金融大三，深圳人，现居新加坡。目前在中国银行新加坡分行做公司金融实习，也喜欢钻研 vibe coding，比如这个网站。此外还爱看电影、打篮球，也是个兼职 hip-hop DJ。",
     heroNow: "目前",
     heroNowBody: "中国银行（新加坡分行）环球公司金融部 · 客户经理实习生 · 2026.08–11",
     heroCtaWork: "查看项目",
@@ -184,6 +184,7 @@ export const experience = [
         "Personal investing with a core–satellite approach: weekly DCA into an S&P 500 index fund, plus a few single names I follow.",
         "Took part in a Chinese F&B brand's overseas expansion project: franchise structure, cross-border supply chain, site selection and pricing.",
         "Produce a Mandarin podcast on my own, from recording to publishing.",
+        "DJ on the side: played an outdoor club event on Sentosa in October 2025 — Chinese and English hip-hop, R&B and pop.",
       ],
     },
     zh: {
@@ -197,6 +198,7 @@ export const experience = [
         "个人投资采用「核心—卫星」框架：每周定投标普 500 指数基金，外加几只自己跟踪的个股。",
         "参与一个中国餐饮品牌的海外扩张项目，接触加盟结构、跨境供应链、选址和定价。",
         "独立制作一档中文播客，从录制到发布。",
+        "兼职 DJ：2025 年 10 月在圣淘沙一场户外 club 活动上打碟，主打中英文 hip-hop、R&B 和流行。",
       ],
     },
   },
