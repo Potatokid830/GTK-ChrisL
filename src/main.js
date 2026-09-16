@@ -30,6 +30,9 @@ function applyCopy() {
     const key = el.dataset.i18n
     if (t()[key] != null) el.textContent = t()[key]
   })
+  // The resume download follows the site language.
+  const resume = $('[data-resume-link]')
+  if (resume) resume.href = state.lang === 'zh' ? './Junyan_Lin_Resume_CN.pdf' : './Junyan_Lin_Resume.pdf'
   renderRail()
   renderTicker()
   renderFigures()
