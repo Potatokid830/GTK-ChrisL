@@ -33,12 +33,11 @@ export const copy = {
     aboutBody:
       "Currently interning in corporate banking at Bank of China (Singapore) — I work with financial statements, sector research and valuation. Every number in a set of accounts is a decision someone made; I like working back from the numbers to those decisions, and using them to help get the next one right. Off hours I build things: an AI resume tool, an AI tarot app, AI videos, and the site you're on right now.",
     figures: [
-      ["School", "SMU, Quantitative Finance · 2024–2028"],
+      ["School", "SMU, Quantitative Finance · 2024–2028", "./work/smu-logo.svg"],
       ["Now", "Bank of China (Singapore) · Corporate banking intern"],
       ["Skills", "Financial analysis, valuation, vibe coding"],
       ["Languages", "Mandarin (native) · English (professional)"],
     ],
-    aboutSchool: "Singapore Management University · Lee Kong Chian School of Business · Class of 2028",
     workEyebrow: "03 — Projects",
     workTitle: "Projects",
     workHint: "Four pieces of coursework from SMU and one personal project. Click one to open it.",
@@ -101,12 +100,11 @@ export const copy = {
     aboutBody:
       "目前在中国银行做公司金融实习，平时接触财报、行业研究和估值这些。财报上每个数字背后都是一个人做过的决定；我喜欢从数字倒推那些决定，也喜欢用数字帮人把下一个决定做对。下班就自己捣鼓东西：做过 AI 改简历网站、AI 塔罗、剪 AI 视频，还有你正在看的这个站。",
     figures: [
-      ["学校", "SMU 量化金融 · 2024–2028"],
+      ["学校", "SMU 量化金融 · 2024–2028", "./work/smu-logo.svg"],
       ["现在", "中国银行（新加坡）· 公司金融实习"],
       ["技能", "财报分析、估值、vibe coding"],
       ["语言", "中文（母语）· 英文（专业）"],
     ],
-    aboutSchool: "新加坡管理大学 · 李光前商学院 · 2028 届",
     workEyebrow: "03 — 项目",
     workTitle: "项目",
     workHint: "四份新大的课程作品和一个个人项目。点开任意一个查看。",
