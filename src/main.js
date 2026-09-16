@@ -167,12 +167,7 @@ function renderTicker() {
 
 function renderFigures() {
   $('[data-figures]').innerHTML = t()
-    .figures.map(
-      ([k, v, logo], i) =>
-        `<li data-reveal style="--i:${i}"><small>${esc(k)}</small><strong>${esc(v)}</strong>${
-          logo ? `<img class="figures__logo" src="${logo}" alt="Singapore Management University" width="300" height="130" />` : ''
-        }</li>`,
-    )
+    .figures.map(([k, v], i) => `<li data-reveal style="--i:${i}"><small>${esc(k)}</small><strong>${esc(v)}</strong></li>`)
     .join('')
 }
 
