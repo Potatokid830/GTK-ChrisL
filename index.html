@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Junyan Lin &mdash; Quantitative Finance, SMU</title>
+    <meta
+      name="description"
+      content="Junyan (Chris) Lin. Quantitative Finance at SMU, corporate banking intern at Bank of China (Singapore). Equity research, financial statement analysis, statistics and marketing projects."
+    />
+    <meta name="theme-color" content="#f1ece3" />
+    <meta property="og:title" content="Junyan Lin &mdash; Quantitative Finance, SMU" />
+    <meta property="og:description" content="Projects, experience and contact. Singapore." />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./src/styles.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.3.11/dist/lenis.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a class="skip" href="#intro" data-i18n="skip">Skip to content</a>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="cursor" data-cursor-badge aria-hidden="true">
+      <span class="cursor__label" data-cursor-label></span>
+    </div>
+
+    <div class="loader" data-loader>
+      <div class="loader__inner">
+        <p class="loader__mark">JL / &#x6797;</p>
+        <p class="loader__count" data-loader-count>00</p>
+        <p class="loader__line" data-i18n="loaderLine">Loading</p>
+      </div>
+    </div>
+
+    <div class="progress" data-progress aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="logo" href="#intro" data-magnetic>JL</a>
+      <p class="topbar__meta">
+        <span data-i18n="loc">Singapore</span>
+        <span class="dot">&middot;</span>
+        <time id="clock" datetime="">--:--</time>
+      </p>
+      <div class="topbar__actions">
+        <button class="text-btn" type="button" data-lang-toggle data-i18n="langLabel" data-magnetic>&#x4E2D;&#x6587;</button>
+        <a class="text-btn" href="./Junyan_Lin_Resume.pdf" download data-i18n="resume" data-magnetic>Resume</a>
+        <a class="text-btn text-btn--solid" href="mailto:junyan.lin.2024@business.smu.edu.sg" data-i18n="write" data-magnetic>Email</a>
+      </div>
+    </header>
+
+    <nav class="rail" aria-label="Sections">
+      <ol data-rail></ol>
+    </nav>
+
+    <main>
+      <section class="hero" id="intro">
+        <p class="eyebrow" data-i18n="heroKicker"></p>
+        <h1 class="hero__name">
+          <span data-i18n="heroName">Junyan Lin</span>
+          <span class="hero__aka" data-i18n="heroAka">Chris</span>
+        </h1>
+        <p class="hero__lead" data-i18n="heroLead"></p>
+        <div class="hero__now">
+          <span class="pulse" aria-hidden="true"></span>
+          <span>
+            <strong data-i18n="heroNow">Currently</strong>
+            <span data-i18n="heroNowBody"></span>
+          </span>
+        </div>
+        <div class="hero__cta">
+          <a class="btn" href="#work" data-magnetic data-i18n="heroCtaWork">View projects</a>
+          <button class="btn btn--ghost" type="button" data-open-first data-magnetic data-i18n="heroCtaNote">
+            Open the first project
+          </button>
+        </div>
+      </section>
+
+      <div class="ticker" aria-hidden="true">
+        <div class="ticker__track" data-ticker></div>
+      </div>
+
+      <section class="about" id="about">
+        <p class="eyebrow" data-i18n="aboutEyebrow"></p>
+        <h2 class="display" data-i18n="aboutTitle"></h2>
+        <p class="about__body" data-i18n="aboutBody"></p>
+        <ul class="figures" data-figures></ul>
+      </section>
+
+      <section class="work" id="work">
+        <div class="work__index">
+          <p class="eyebrow" data-i18n="workEyebrow"></p>
+          <h2 class="display display--sm" data-i18n="workTitle">Projects</h2>
+          <p class="hint" data-i18n="workHint"></p>
+          <ol class="work-list" data-work-list></ol>
+        </div>
+        <aside class="work__preview" data-work-preview>
+          <button class="work-preview__cover" type="button" data-preview-open data-cursor="Open">
+            <img data-preview-img alt="" />
+          </button>
+          <div class="work-preview__row">
+            <p class="work-preview__no" data-preview-no>01</p>
+            <p class="work-preview__stamp" data-preview-stamp>BUY</p>
+          </div>
+          <p class="work-preview__figure" data-preview-figure></p>
+          <p class="work-preview__label" data-preview-label></p>
+          <p class="work-preview__dek" data-preview-dek></p>
+          <button class="btn" type="button" data-preview-open data-magnetic data-i18n="workOpen">Open project</button>
+        </aside>
+      </section>
+
+      <section class="practice" id="practice">
+        <p class="eyebrow eyebrow--light" data-i18n="practiceEyebrow"></p>
+        <h2 class="display display--light" data-i18n="practiceTitle">Experience</h2>
+        <div class="practice__list" data-practice></div>
+      </section>
+
+      <section class="index-sec" id="index">
+        <p class="eyebrow" data-i18n="indexEyebrow"></p>
+        <h2 class="display display--sm" data-i18n="indexTitle">Skills and tools</h2>
+        <div class="skill-grid" data-skills></div>
+      </section>
+
+      <section class="contact" id="contact">
+        <p class="eyebrow" data-i18n="contactEyebrow"></p>
+        <h2 class="display" data-i18n="contactTitle">Get in touch</h2>
+        <p class="contact__body" data-i18n="contactBody"></p>
+        <ul class="contact__list">
+          <li>
+            <span data-i18n="contactEmail">Email</span>
+            <a href="mailto:junyan.lin.2024@business.smu.edu.sg">junyan.lin.2024@business.smu.edu.sg</a>
+          </li>
+          <li>
+            <span data-i18n="contactPhone">Singapore</span>
+            <a href="tel:+6586217039">+65 8621 7039</a>
+          </li>
+          <li>
+            <span data-i18n="contactPhoneCn">China</span>
+            <a href="tel:+8618529524213">+86 185 2952 4213</a>
+          </li>
+          <li>
+            <span data-i18n="contactLi">LinkedIn</span>
+            <a href="https://www.linkedin.com/in/junyan-lin-95b7233ab" target="_blank" rel="noreferrer">linkedin.com/in/junyan-lin</a>
+          </li>
+          <li>
+            <span data-i18n="contactWechat">WeChat</span>
+            <button class="copy" type="button" data-copy="CHRIS_LJY_ATB">
+              <span>CHRIS_LJY_ATB</span>
+              <small data-copy-hint data-i18n="copy">Click to copy</small>
+            </button>
+          </li>
+        </ul>
+        <p class="footer-note" data-i18n="footerNote"></p>
+      </section>
+    </main>
+
+    <div class="dossier" data-dossier hidden>
+      <header class="dossier__bar">
+        <button class="text-btn" type="button" data-case-close>
+          <span aria-hidden="true">&larr;</span> <span data-i18n="back">Back</span>
+        </button>
+        <p class="dossier__count" data-case-count></p>
+        <div class="dossier__nav">
+          <button class="text-btn" type="button" data-case-prev data-i18n="prevProject">Previous</button>
+          <button class="text-btn" type="button" data-case-next data-i18n="nextProject">Next</button>
+        </div>
+      </header>
+      <div class="dossier__body" data-case-body></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.11/dist/lenis.min.js"></script>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
