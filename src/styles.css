@@ -122,7 +122,13 @@ body.is-loading .hero .eyebrow, body.is-loading .hero__name, body.is-loading .he
 @keyframes marquee { to { transform: translateX(-50%); } }
 
 /* about */
-.about { border-bottom: 1px solid var(--line); }
+.about { border-bottom: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2rem 4rem; align-items: end; }
+.about__text { min-width: 0; }
+.about__text .about__body { margin-bottom: 0; }
+.about__school { margin: 0; justify-self: end; align-self: end; width: clamp(14rem, 22vw, 19rem); padding: 1.4rem 1.6rem 1.2rem; border: 1px solid var(--line); display: grid; gap: 1rem; }
+.about__school img { display: block; width: 100%; height: auto; }
+.about__school figcaption { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mute); line-height: 1.6; }
+.about .figures { grid-column: 1 / -1; margin-top: 0.5rem; }
 .display { font-family: var(--serif); font-weight: 400; font-size: clamp(2rem, 4.6vw, 3.6rem); line-height: 1.12; letter-spacing: -0.03em; margin: 0 0 1.4rem; max-width: 24ch; }
 .display--sm { font-size: clamp(2rem, 4vw, 3rem); }
 .about__body, .contact__body { max-width: 42rem; font-size: 1.05rem; color: var(--ink-2); margin: 0 0 2.5rem; }
@@ -285,6 +291,8 @@ body.is-loading .hero .eyebrow, body.is-loading .hero__name, body.is-loading .he
   .rail { display: none; }
   .figures, .skill-grid, .work, .d-meta { grid-template-columns: 1fr 1fr; }
   .work { gap: 2rem; }
+  .about { grid-template-columns: 1fr; gap: 2rem; }
+  .about__school { justify-self: start; width: clamp(12rem, 40vw, 16rem); }
   .practice-card { grid-template-columns: 1fr; gap: 0.8rem; }
   .d-head { grid-template-columns: 1fr; align-items: start; }
   .d-grid { grid-template-columns: 1fr; gap: 2.5rem; }
