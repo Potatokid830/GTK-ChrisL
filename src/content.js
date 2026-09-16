@@ -31,7 +31,7 @@ export const copy = {
     aboutEyebrow: "02 — About",
     aboutTitle: "From Shenzhen, studying in Singapore. Into finance, and into building my own things with code.",
     aboutBody:
-      "Currently interning in corporate banking at Bank of China (Singapore) — I work with financial statements, sector research and valuation, and what draws me to finance is seeing how a business actually runs. Off hours I build things: an AI resume tool, an AI tarot app, AI videos, and the site you're on right now.",
+      "Currently interning in corporate banking at Bank of China (Singapore) — I work with financial statements, sector research and valuation. Every number in a set of accounts is a decision someone made; I like working back from the numbers to those decisions, and using them to help get the next one right. Off hours I build things: an AI resume tool, an AI tarot app, AI videos, and the site you're on right now.",
     figures: [
       ["School", "SMU, Quantitative Finance · 2024–2028"],
       ["Now", "Bank of China (Singapore) · Corporate banking intern"],
@@ -99,7 +99,7 @@ export const copy = {
     aboutEyebrow: "02 — 关于我",
     aboutTitle: "深圳长大，新加坡读书。喜欢金融，也喜欢用代码把想法做出来。",
     aboutBody:
-      "目前在中国银行做公司金融实习，平时接触财报、行业研究和估值这些——金融吸引我的地方是能看懂一门生意怎么运转。下班就自己捣鼓东西：做过 AI 改简历网站、AI 塔罗、剪 AI 视频，还有你正在看的这个站。",
+      "目前在中国银行做公司金融实习，平时接触财报、行业研究和估值这些。财报上每个数字背后都是一个人做过的决定；我喜欢从数字倒推那些决定，也喜欢用数字帮人把下一个决定做对。下班就自己捣鼓东西：做过 AI 改简历网站、AI 塔罗、剪 AI 视频，还有你正在看的这个站。",
     figures: [
       ["学校", "SMU 量化金融 · 2024–2028"],
       ["现在", "中国银行（新加坡）· 公司金融实习"],
