@@ -500,8 +500,11 @@ function bindScroll() {
     $$('[data-rail-link]').forEach((a) => a.classList.toggle('is-active', a.dataset.railLink === current))
   }
   const progress = $('[data-progress]')
-  if (window.Lenis) {
-    const lenis = new window.Lenis({ autoRaf: true, lerp: reduced ? 1 : 0.1 })
+  // Lenis is tuned for a trackpad. Windows desktops send 120px mouse-wheel ticks,
+  // which looks floaty and cheap. Native scrolling there; Lenis stays on Mac.
+  const useLenis = window.Lenis && !reduced && !/Windows/i.test(navigator.userAgent)
+  if (useLenis) {
+    const lenis = new window.Lenis({ autoRaf: true, lerp: 0.1 })
     state.lenis = lenis
     lenis.on('scroll', ({ progress: p }) => { progress.style.width = `${p * 100}%` })
     lenis.on('scroll', spy)
@@ -610,11 +613,6 @@ function bindUi() {
   })
 }
 
-// One line in the console to diagnose "the animations look off on my machine".
-console.info(
-  `[site] motion: ${reduced ? 'REDUCED (OS or browser has animations turned off)' : 'full'} · pointer: ${finePointer ? 'fine' : 'coarse'} · dpr: ${devicePixelRatio} · smooth scroll: ${window.Lenis ? 'lenis' : 'native'}`,
-)
-
 applyCopy()
 clock()
 bindUi()
@@ -624,3 +622,6 @@ bindScroll()
 bindPortrait()
 works.forEach((w) => { const im = new Image(); im.src = w.slides[0].src })
 loader()
+console.info(
+  `[site] motion: ${reduced ? 'REDUCED (Windows animation effects may be off)' : 'full'} | pointer: ${finePointer ? 'fine' : 'coarse'} | scroll: ${state.lenis ? 'lenis' : 'native'}`,
+)
