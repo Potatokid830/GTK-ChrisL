@@ -43,9 +43,10 @@ img { max-width: 100%; display: block; }
 .skip { position: absolute; left: 1rem; top: -4rem; background: var(--ink); color: var(--paper); padding: 0.5rem 0.8rem; z-index: 200; }
 .skip:focus { top: 1rem; }
 
+/* grayscale noise at low opacity; normal blending so the compositor does not re-blend the whole page on every frame */
 .grain {
-  pointer-events: none; position: fixed; inset: 0; z-index: 120; opacity: 0.045; mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none; position: fixed; inset: 0; z-index: 120; opacity: 0.06; contain: strict;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* pointer badge: the system cursor stays visible; this only trails it over project rows */
@@ -100,10 +101,10 @@ main { padding-left: var(--rail); padding-top: var(--top); }
 .hero__text { grid-column: 1; grid-row: 2; align-self: end; min-width: 0; padding-top: 3rem; }
 @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
 
-/* portrait: printed onto the paper (multiply), dissolving at the bottom instead of a hard photo edge */
+/* portrait: printed onto the paper (multiply), dissolving at the bottom instead of a hard photo edge.
+   The blend is confined to this small frame (its own stacking context), so it is cheap to composite. */
 .hero__photo { grid-column: 2; grid-row: 1 / -1; align-self: end; margin: 0; width: clamp(15rem, 26vw, 24rem); justify-self: end; will-change: transform; }
-/* the frame is its own stacking context (clip-path / transform), so it carries the paper colour for the multiply to land on */
-.hero__photo-frame { overflow: hidden; background: var(--paper); }
+.hero__photo-frame { overflow: hidden; background: var(--paper); isolation: isolate; }
 .hero__photo img {
   width: 100%; height: auto; display: block; mix-blend-mode: multiply; filter: saturate(0.9) contrast(1.02);
   -webkit-mask-image: linear-gradient(180deg, #000 76%, transparent 100%); mask-image: linear-gradient(180deg, #000 76%, transparent 100%);
@@ -119,7 +120,8 @@ main { padding-left: var(--rail); padding-top: var(--top); }
 
 /* split headings: each word (or CJK character) rises out of its own mask */
 .split .w { display: inline-block; overflow: hidden; vertical-align: baseline; padding: 0.14em 0.03em 0.18em; margin: -0.14em -0.03em -0.18em; }
-.split .w > span { display: inline-block; will-change: transform; }
+/* no will-change here: a persistent GPU layer turns off ClearType on Windows and the words look fuzzy */
+.split .w > span { display: inline-block; }
 .hero__lead { max-width: 38rem; font-size: clamp(1.1rem, 1.8vw, 1.3rem); line-height: 1.45; margin: 1.6rem 0 1.6rem; color: var(--ink-2); }
 .hero__now { display: flex; gap: 0.7rem; align-items: flex-start; max-width: 23rem; font-size: 0.92rem; line-height: 1.45; color: var(--ink-2); margin: 0; }
 .hero__now strong { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; display: block; margin-bottom: 0.2rem; }
@@ -347,9 +349,6 @@ main { padding-left: var(--rail); padding-top: var(--top); }
   .js .hero.is-in .hero__photo img { transform: none; }
   .js .hero.is-in .hero__photo figcaption { opacity: 1; }
 }
-/* the magnetic offset is applied inline; this only eases the return */
-[data-magnetic] { will-change: transform; }
-
 /* responsive */
 @media (max-width: 1100px) {
   :root { --rail: 0px; }
@@ -406,6 +405,10 @@ main { padding-left: var(--rail); padding-top: var(--top); }
 
 @media (hover: none) { .cursor { display: none !important; } }
 
+/* Reduced motion (also what Chrome reports when Windows' "animation effects" is off):
+   nothing moves, but content still fades in so the page does not feel dead. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
+  .js [data-reveal], .js .hero__text, .js .hero__top, .js .hero__photo { opacity: 0; transition: opacity 0.45s ease !important; }
+  .js [data-reveal].is-in, .js .hero.is-in .hero__text, .js .hero.is-in .hero__top, .js .hero.is-in .hero__photo { opacity: 1; }
 }

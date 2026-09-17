@@ -82,10 +82,8 @@ function splitHeadings() {
 
 let revealIo = null
 function observeReveals() {
-  if (reduced) {
-    $$('[data-reveal], .split').forEach((el) => el.classList.add('is-in'))
-    return
-  }
+  // Reduced motion: headings show at once; blocks still fade in on scroll (opacity only).
+  if (reduced) $$('.split').forEach((el) => el.classList.add('is-in'))
   if (!revealIo) {
     revealIo = new IntersectionObserver(
       (entries) => {
@@ -611,6 +609,11 @@ function bindUi() {
     if (e.key === 'Escape') closeCase()
   })
 }
+
+// One line in the console to diagnose "the animations look off on my machine".
+console.info(
+  `[site] motion: ${reduced ? 'REDUCED (OS or browser has animations turned off)' : 'full'} · pointer: ${finePointer ? 'fine' : 'coarse'} · dpr: ${devicePixelRatio} · smooth scroll: ${window.Lenis ? 'lenis' : 'native'}`,
+)
 
 applyCopy()
 clock()
