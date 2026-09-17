@@ -149,6 +149,35 @@ function bindPortrait() {
   else window.addEventListener('scroll', onScroll, { passive: true })
 }
 
+// NYE still drifts a little against the scroll — transform only, no blend.
+function bindOffhours() {
+  const sec = $('.offhours')
+  const img = $('[data-offhours-bg]')
+  if (!sec || !img) return
+  if (reduced) {
+    sec.classList.add('is-in')
+    return
+  }
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) sec.classList.add('is-in')
+      })
+    },
+    { threshold: 0.15 },
+  )
+  io.observe(sec)
+  const tick = () => {
+    const r = sec.getBoundingClientRect()
+    const p = (innerHeight - r.top) / (innerHeight + r.height)
+    const t = Math.min(1, Math.max(0, p))
+    img.style.transform = `translate3d(0, ${((t - 0.5) * 7).toFixed(2)}%, 0) scale(1.08)`
+  }
+  if (state.lenis) state.lenis.on('scroll', tick)
+  else window.addEventListener('scroll', tick, { passive: true })
+  tick()
+}
+
 function renderRail() {
   $('[data-rail]').innerHTML = t()
     .rail.map(
@@ -620,6 +649,7 @@ bindCursor()
 bindMagnetic()
 bindScroll()
 bindPortrait()
+bindOffhours()
 works.forEach((w) => { const im = new Image(); im.src = w.slides[0].src })
 loader()
 console.info(
