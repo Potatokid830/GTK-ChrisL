@@ -218,7 +218,7 @@ main { padding-left: var(--rail); padding-top: var(--top); }
 .offhours__inset { position: absolute; z-index: 2; right: var(--pad); bottom: clamp(1.5rem, 4vh, 2.5rem); margin: 0; width: min(36vw, 17rem); }
 .offhours__inset img { width: 100%; height: auto; display: block; border: 1px solid rgba(241, 236, 227, 0.28); }
 
-/* basketball: paper section, trophy held sharp against a fogged classroom */
+/* basketball: paper section; photo slot stays portrait, image covers it */
 .bball {
   display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(15rem, 0.7fr);
   gap: 2rem 3.5rem; align-items: center;
@@ -227,8 +227,18 @@ main { padding-left: var(--rail); padding-top: var(--top); }
 }
 .bball__text { min-width: 0; }
 .bball__body { margin: 0; max-width: 38rem; font-size: 1.05rem; color: var(--ink-2); line-height: 1.5; }
-.bball__photo { margin: 0; }
-.bball__photo img { width: 100%; height: auto; display: block; }
+.bball__photo {
+  margin: 0;
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+}
+.bball__photo img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+  display: block;
+}
 
 /* skills */
 .skill-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); margin-top: 2rem; }
