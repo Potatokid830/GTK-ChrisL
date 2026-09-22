@@ -39,10 +39,11 @@ function applyCopy() {
   renderWork()
   renderPractice()
   renderSkills()
-  setPreview(state.work)
+  setPreview(state.work, true)
   if (state.caseIdx != null) renderCase()
   splitHeadings()
   observeReveals()
+  updateChrome()
 }
 
 /* ---------- motion helpers ---------- */
@@ -109,11 +110,14 @@ function observeReveals() {
 
 function heroIn() {
   const hero = $('.hero')
-  requestAnimationFrame(() => requestAnimationFrame(() => {
+  // Preview wipes should not wait on the entrance frame.
+  state.ready = true
+  const go = () => {
     hero.classList.add('is-in')
     $$('.hero .split').forEach((el) => el.classList.add('is-in'))
-    state.ready = true
-  }))
+  }
+  if (reduced) { go(); return }
+  requestAnimationFrame(() => requestAnimationFrame(go))
 }
 
 // The portrait drifts a little against the pointer and lags the scroll.
@@ -207,25 +211,54 @@ function renderWork() {
           <span class="no">${w.no}</span>
           <span class="title">${esc(c.title)}</span>
           <span class="kind">${esc(c.kind)}</span>
+          <span class="work-item__rule" aria-hidden="true"></span>
         </button>
       </li>`
     })
     .join('')
 }
 
-function setPreview(i) {
+// Digits roll from the previous glyph; everything else just swaps.
+function setFigure(el, next) {
+  const prev = el.dataset.figure || ''
+  el.dataset.figure = next
+  el.setAttribute('aria-label', next)
+  if (reduced || !state.ready || prev === next || !/\d/.test(next)) {
+    el.textContent = next
+    return
+  }
+  el.innerHTML = [...next].map((ch, i) => {
+    if (!/\d/.test(ch)) return `<span class="fig-ch">${esc(ch)}</span>`
+    const from = /\d/.test(prev[i] || '') ? prev[i] : '0'
+    const col = [...Array(10)].map((_, d) => `<span>${d}</span>`).join('')
+    return `<span class="reel" aria-hidden="true"><span class="reel__col" style="transform:translateY(calc(${from} * -1em))">${col}</span></span>`
+  }).join('')
+  const cols = [...el.querySelectorAll('.reel__col')]
+  let n = 0
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    ;[...next].forEach((ch) => {
+      if (!/\d/.test(ch)) return
+      const col = cols[n++]
+      if (col) col.style.transform = `translateY(calc(${ch} * -1em))`
+    })
+  }))
+}
+
+function setPreview(i, force = false) {
+  const same = i === state.work && !force
   state.work = i
   const w = works[i]
   const c = w[state.lang]
   const card = $('[data-work-preview]')
   $$('[data-work]').forEach((btn) => btn.classList.toggle('is-on', Number(btn.dataset.work) === i))
+  if (same && state.ready) return
 
   const apply = () => {
     $('[data-preview-no]').textContent = w.no
     const stamp = $('[data-preview-stamp]')
     stamp.textContent = c.stamp
     stamp.classList.toggle('is-buy', w.id === 'heineken')
-    $('[data-preview-figure]').textContent = c.figure
+    setFigure($('[data-preview-figure]'), c.figure)
     $('[data-preview-label]').textContent = c.figureLabel
     $('[data-preview-dek]').textContent = c.preview
     const img = $('[data-preview-img]')
@@ -233,15 +266,25 @@ function setPreview(i) {
     img.alt = c.title
   }
 
-  // First paint and reduced motion: swap in place. Otherwise fade out, swap, fade back.
-  if (reduced || !state.ready) { apply(); return }
+  // First paint, language swaps and reduced motion: no wipe.
+  if (reduced || !state.ready || force) { apply(); return }
   const token = ++state.previewToken
-  card.classList.add('is-switching')
+  const wipe = $('[data-preview-wipe]')
+  wipe.style.transition = ''
+  wipe.style.transform = ''
+  card.classList.add('is-out', 'is-switching')
   window.setTimeout(() => {
     if (token !== state.previewToken) return
     apply()
-    requestAnimationFrame(() => requestAnimationFrame(() => card.classList.remove('is-switching')))
-  }, 180)
+    wipe.style.transition = 'none'
+    wipe.style.transform = 'translate3d(101%,0,0)'
+    card.classList.remove('is-out', 'is-switching')
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (token !== state.previewToken) return
+      wipe.style.transition = ''
+      wipe.style.transform = ''
+    }))
+  }, 460)
 }
 
 function renderPractice() {
@@ -520,31 +563,78 @@ function clock() {
   setInterval(stamp, 15000)
 }
 
-function bindScroll() {
-  const sections = ['intro', 'work', 'practice', 'index', 'contact'].map((id) => document.getElementById(id)).filter(Boolean)
-  const spy = () => {
-    const y = window.scrollY + window.innerHeight * 0.35
-    let current = sections[0]?.id
-    sections.forEach((sec) => { if (sec.offsetTop <= y) current = sec.id })
-    $$('[data-rail-link]').forEach((a) => a.classList.toggle('is-active', a.dataset.railLink === current))
+const railSections = ['intro', 'work', 'practice', 'index', 'contact']
+
+function placeRailMark() {
+  const rail = $('.rail')
+  const mark = $('[data-rail-mark]')
+  const active = $('.rail a.is-active')
+  if (!rail || !mark || !active) return
+  if (getComputedStyle(rail).display === 'none') return
+  const link = active.getBoundingClientRect()
+  const box = rail.getBoundingClientRect()
+  const y = link.top - box.top + (link.height - mark.offsetHeight) / 2
+  const next = `translate3d(0, ${y.toFixed(1)}px, 0)`
+  if (!mark.dataset.ready) {
+    mark.style.transition = 'none'
+    mark.style.transform = next
+    mark.dataset.ready = '1'
+    requestAnimationFrame(() => { mark.style.transition = '' })
+    return
   }
+  mark.style.transform = next
+}
+
+// Ink chrome while Experience or DJ sits under the bar. Name eases back as the hero leaves.
+function updateChrome() {
+  const y = window.scrollY + window.innerHeight * 0.35
+  let current = railSections[0]
+  railSections.forEach((id) => {
+    const sec = document.getElementById(id)
+    if (sec && sec.offsetTop <= y) current = id
+  })
+  $$('[data-rail-link]').forEach((a) => a.classList.toggle('is-active', a.dataset.railLink === current))
+  placeRailMark()
+
+  const probe = ($('.topbar')?.offsetHeight || 68) - 1
+  const dark = ['.practice', '.offhours'].some((sel) => {
+    const el = $(sel)
+    if (!el) return false
+    const r = el.getBoundingClientRect()
+    return r.top < probe && r.bottom > probe
+  })
+  document.body.classList.toggle('is-invert', dark)
+
+  const name = $('.hero__name')
+  const hero = $('.hero')
+  if (name && hero && !reduced) {
+    const p = Math.min(1, Math.max(0, window.scrollY / (hero.offsetHeight * 0.9)))
+    name.style.transform = p < 0.01
+      ? ''
+      : `translate3d(0, ${(-p * 28).toFixed(1)}px, 0) scale(${(1 - p * 0.08).toFixed(3)})`
+  }
+}
+
+function bindScroll() {
   const progress = $('[data-progress]')
+  const onScroll = () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight
+    progress.style.width = `${max ? (window.scrollY / max) * 100 : 0}%`
+    updateChrome()
+  }
   // Lenis is tuned for a trackpad. Windows desktops send 120px mouse-wheel ticks,
   // which looks floaty and cheap. Native scrolling there; Lenis stays on Mac.
   const useLenis = window.Lenis && !reduced && !/Windows/i.test(navigator.userAgent)
   if (useLenis) {
     const lenis = new window.Lenis({ autoRaf: true, lerp: 0.1 })
     state.lenis = lenis
-    lenis.on('scroll', ({ progress: p }) => { progress.style.width = `${p * 100}%` })
-    lenis.on('scroll', spy)
-  } else {
-    window.addEventListener('scroll', () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight
-      progress.style.width = `${max ? (window.scrollY / max) * 100 : 0}%`
-      spy()
-    }, { passive: true })
+    lenis.on('scroll', onScroll)
   }
-  spy()
+  // Native scroll as well: scrollbar drags and scrollTo do not always pass through Lenis.
+  window.addEventListener('scroll', onScroll, { passive: true })
+  window.addEventListener('resize', onScroll)
+  window.addEventListener('load', onScroll)
+  onScroll()
 }
 
 function finishLoader() {
@@ -605,10 +695,18 @@ async function copyText(btn) {
 }
 
 function bindUi() {
+  let langTimer = 0
   $('[data-lang-toggle]').addEventListener('click', () => {
-    state.lang = state.lang === 'en' ? 'zh' : 'en'
-    localStorage.setItem('jl-lang', state.lang)
-    applyCopy()
+    const go = () => {
+      state.lang = state.lang === 'en' ? 'zh' : 'en'
+      localStorage.setItem('jl-lang', state.lang)
+      applyCopy()
+      document.querySelector('main')?.classList.remove('is-lang')
+    }
+    if (reduced) { go(); return }
+    document.querySelector('main')?.classList.add('is-lang')
+    window.clearTimeout(langTimer)
+    langTimer = window.setTimeout(go, 180)
   })
 
   document.addEventListener('click', (e) => {

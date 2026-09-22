@@ -54,6 +54,7 @@
     </header>
 
     <nav class="rail" aria-label="Sections">
+      <span class="rail__mark" data-rail-mark aria-hidden="true"></span>
       <ol data-rail></ol>
     </nav>
 
@@ -119,7 +120,9 @@
         </div>
         <aside class="work__preview" data-work-preview data-reveal style="--i: 3">
           <button class="work-preview__cover" type="button" data-preview-open data-cursor="Open">
-            <img data-preview-img alt="" />
+            <span class="work-preview__wipe" data-preview-wipe>
+              <img data-preview-img alt="" />
+            </span>
           </button>
           <div class="work-preview__row">
             <p class="work-preview__no" data-preview-no>01</p>
