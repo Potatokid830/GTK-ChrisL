@@ -1157,6 +1157,7 @@ function openCmdk(from) {
   renderCmdkList()
   syncCmdkCopy()
   requestAnimationFrame(() => input?.focus())
+  syncAskFab()
 }
 
 function closeCmdk() {
@@ -1170,6 +1171,7 @@ function closeCmdk() {
   const back = state.cmdkReturn
   state.cmdkReturn = null
   if (back && typeof back.focus === 'function') back.focus()
+  syncAskFab()
 }
 
 function jumpTo(hash) {
@@ -1223,7 +1225,7 @@ function openCmdkAi(from) {
 function syncAskFab() {
   const fab = $('[data-ask-fab]')
   if (!fab) return
-  fab.hidden = !state.ready || state.heroIn || state.caseIdx != null
+  fab.hidden = !state.ready || state.heroIn || state.caseIdx != null || state.cmdkOpen
 }
 
 function bindAskFab() {

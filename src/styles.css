@@ -568,28 +568,50 @@ main { padding-left: var(--rail); padding-top: var(--top); }
   overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
 
-.ask-fab {
-  position: fixed; right: var(--pad); bottom: 1.15rem; z-index: 115;
-  display: inline-flex; align-items: center; justify-content: center;
-  min-height: 2.5rem; padding: 0 0.9rem;
-  background: var(--paper); color: var(--ink); border: 1px solid var(--ink);
-  font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
-  text-transform: uppercase;
+.ask-pet {
+  position: fixed; right: var(--pad); bottom: 0.7rem; z-index: 115;
+  display: flex; flex-direction: column; align-items: center; gap: 0.28rem;
+  width: 5.4rem; background: none; border: 0; padding: 0;
+  font: inherit; color: inherit;
 }
-.ask-fab[hidden] { display: none; }
-.ask-fab__mark { display: none; }
-.ask-fab:hover, .ask-fab:focus-visible { background: var(--ink); color: var(--paper); }
+.ask-pet[hidden] { display: none; }
+.ask-pet:not([hidden]) { animation: ask-pet-in 0.45s var(--ease) both; }
+.ask-pet__fig {
+  width: 100%; height: auto; display: block;
+  transform-origin: 50% 100%;
+  animation: ask-pet-idle 2.6s ease-in-out infinite;
+}
+.ask-pet__tag {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 1.55rem; padding: 0 0.55rem;
+  background: var(--paper); color: var(--ink); border: 1px solid var(--ink);
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+  text-transform: uppercase; white-space: nowrap;
+}
+.ask-pet:hover .ask-pet__fig,
+.ask-pet:focus-visible .ask-pet__fig {
+  animation-play-state: paused;
+  transform: translateY(-6px);
+}
+.ask-pet:hover .ask-pet__tag,
+.ask-pet:focus-visible .ask-pet__tag { background: var(--ink); color: var(--paper); }
+.ask-pet:focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
+
+@keyframes ask-pet-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes ask-pet-idle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
 
 .cmdk-open__mob { display: none; }
 @media (max-width: 760px) {
   .cmdk-open__desk { display: none; }
   .cmdk-open__mob { display: inline; }
-  .ask-fab {
-    width: 2.75rem; height: 2.75rem; min-height: 0; padding: 0;
-    border-radius: 50%; letter-spacing: 0; font-size: 10px;
-  }
-  .ask-fab__full { display: none; }
-  .ask-fab__mark { display: inline; }
+  .ask-pet { width: 3.35rem; bottom: 0.85rem; right: 0.75rem; gap: 0.16rem; }
+  .ask-pet__tag { min-height: 1.35rem; padding: 0 0.32rem; font-size: 9px; letter-spacing: 0.08em; }
 }
 
 /* DJ player: sits on the photo scrim, paper-on-ink, never autoplays */
