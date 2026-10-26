@@ -568,10 +568,28 @@ main { padding-left: var(--rail); padding-top: var(--top); }
   overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
 
+.ask-fab {
+  position: fixed; right: var(--pad); bottom: 1.15rem; z-index: 115;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 2.5rem; padding: 0 0.9rem;
+  background: var(--paper); color: var(--ink); border: 1px solid var(--ink);
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.ask-fab[hidden] { display: none; }
+.ask-fab__mark { display: none; }
+.ask-fab:hover, .ask-fab:focus-visible { background: var(--ink); color: var(--paper); }
+
 .cmdk-open__mob { display: none; }
 @media (max-width: 760px) {
   .cmdk-open__desk { display: none; }
   .cmdk-open__mob { display: inline; }
+  .ask-fab {
+    width: 2.75rem; height: 2.75rem; min-height: 0; padding: 0;
+    border-radius: 50%; letter-spacing: 0; font-size: 10px;
+  }
+  .ask-fab__full { display: none; }
+  .ask-fab__mark { display: inline; }
 }
 
 /* DJ player: sits on the photo scrim, paper-on-ink, never autoplays */

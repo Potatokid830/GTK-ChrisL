@@ -29,6 +29,7 @@ const state = {
   cmdkReturn: null,
   aiTurns: [],
   aiType: 0,
+  heroIn: true,
 }
 
 const $ = (sel, root = document) => root.querySelector(sel)
@@ -63,6 +64,7 @@ function applyCopy() {
   applyThemeLabel()
   applyFooter()
   syncCmdkCopy()
+  syncAskFab()
 }
 
 /* ---------- motion helpers ---------- */
@@ -131,6 +133,7 @@ function heroIn() {
   const hero = $('.hero')
   // Preview wipes should not wait on the entrance frame.
   state.ready = true
+  syncAskFab()
   const go = () => {
     hero.classList.add('is-in')
     $$('.hero .split').forEach((el) => el.classList.add('is-in'))
@@ -659,6 +662,7 @@ function openCase(idx) {
   requestAnimationFrame(() => root.classList.add('is-open'))
   root.scrollTop = 0
   if (!first) root.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' })
+  syncAskFab()
 }
 
 function renderCase() {
@@ -719,6 +723,7 @@ function closeCase() {
   document.body.classList.remove('is-case')
   state.caseIdx = null
   state.lenis?.start()
+  syncAskFab()
   window.setTimeout(() => {
     if (state.caseIdx == null) {
       root.hidden = true
@@ -1126,6 +1131,8 @@ function syncCmdkCopy() {
   if (state.cmdkAi) renderAiPresets()
   const tog = $('[data-dj-toggle]')
   if (tog) tog.setAttribute('aria-label', tog.getAttribute('aria-pressed') === 'true' ? t().djPause : t().djPlay)
+  const fab = $('[data-ask-fab]')
+  if (fab) fab.setAttribute('aria-label', t().askAi)
 }
 
 function cmdkFocusables() {
@@ -1206,6 +1213,37 @@ function enterAi() {
   $('[data-cmdk-ai]').hidden = false
   renderAiPresets()
   requestAnimationFrame(() => $('[data-ai-input]')?.focus())
+}
+
+function openCmdkAi(from) {
+  openCmdk(from)
+  enterAi()
+}
+
+function syncAskFab() {
+  const fab = $('[data-ask-fab]')
+  if (!fab) return
+  fab.hidden = !state.ready || state.heroIn || state.caseIdx != null
+}
+
+function bindAskFab() {
+  const fab = $('[data-ask-fab]')
+  const hero = $('.hero')
+  if (!fab) return
+  fab.addEventListener('click', () => openCmdkAi(fab))
+  if (!hero) {
+    state.heroIn = false
+    syncAskFab()
+    return
+  }
+  const io = new IntersectionObserver(
+    (entries) => {
+      state.heroIn = entries.some((en) => en.isIntersecting)
+      syncAskFab()
+    },
+    { threshold: 0 },
+  )
+  io.observe(hero)
 }
 
 function leaveAi() {
@@ -1574,6 +1612,7 @@ applyCopy()
 clock()
 bindUi()
 bindCmdk()
+bindAskFab()
 bindDj()
 bindCursor()
 bindMagnetic()
