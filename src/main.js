@@ -339,6 +339,7 @@ function renderPractice() {
           <p class="org">${esc(c.org)} &middot; ${esc(c.unit)}</p>
           <p class="lead">${esc(c.lead)}</p>
           <ul>${c.points.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>
+          ${c.more ? `<button class="practice-more" type="button" data-open-slug="${esc(c.moreSlug)}">${esc(c.more)}</button>` : ''}
         </div>
       </article>`
     })
@@ -497,11 +498,30 @@ function widgetRewrite(c) {
   </div>`
 }
 
+function widgetSteps(c) {
+  const on = Number.isInteger(c.stepOn) ? c.stepOn : 0
+  return `<div class="widget widget--steps" data-widget="steps" style="--steps:${c.steps.length}">
+    <h3>${esc(c.widgetTitle)}</h3>
+    <div class="steps">
+      ${c.steps
+        .map(
+          (s, i) =>
+            `<button type="button" class="${i === on ? 'is-on' : ''}" data-j="${esc(s[2])}">
+              <small>${esc(s[0])}</small><span>${esc(s[1])}</span>
+            </button>`,
+        )
+        .join('')}
+    </div>
+    <p class="widget-note" data-j-note>${esc(c.steps[on][2])}</p>
+  </div>`
+}
+
 function widgetFor(w, c) {
   if (w.widget === 'scenarios') return widgetScenarios(c) + widgetSensitivity(c)
   if (w.widget === 'compare') return widgetCompare(c)
   if (w.widget === 'levers') return widgetLevers(c)
   if (w.widget === 'mix') return widgetMix(c)
+  if (w.widget === 'steps') return widgetSteps(c)
   return ''
 }
 
@@ -718,16 +738,22 @@ function renderCase() {
   $('[data-case-next]').disabled = state.caseIdx === works.length - 1
 
   const hasStats = Array.isArray(c.stats) && c.stats.length > 0
-  const widgetHtml = widgetFor(w, c)
+  const stepsHtml = w.widget === 'steps' ? widgetSteps(c) : ''
+  const widgetHtml = w.widget === 'steps' ? '' : widgetFor(w, c)
   const hasSide = hasStats || widgetHtml !== ''
+  const playHtml = c.play
+    ? `<p class="d-play"><a class="btn" href="${esc(c.play.href)}" target="_blank" rel="noreferrer">${esc(c.play.label)}</a><span>${esc(c.play.note)}</span></p>`
+    : ''
   body.innerHTML = `
     <section class="d-head">
       <p class="eyebrow">${esc(c.eyebrow || `${c.kind} \u00B7 ${c.meta[0][1]}`)}</p>
       <h2 class="d-title">${esc(c.title)}</h2>
+      ${c.subtitle ? `<p class="d-sub">${esc(c.subtitle)}</p>` : ''}
       <p class="d-dek">${esc(c.dek)}</p>
       <ul class="d-meta">
         ${c.meta.map(([k, v]) => `<li><small>${esc(k)}</small><strong>${esc(v)}</strong></li>`).join('')}
       </ul>
+      ${playHtml}
     </section>
 
     <section class="d-viewer">
@@ -739,6 +765,8 @@ function renderCase() {
         )
         .join('')}
     </section>
+
+    ${stepsHtml}
 
     <section class="d-grid ${hasSide ? '' : 'd-grid--single'}">
       ${hasSide ? `<aside class="d-side">
@@ -1004,6 +1032,12 @@ function bindUi() {
     if (workBtn) { setPreview(Number(workBtn.dataset.work)); openCase(Number(workBtn.dataset.work)); return }
     if (e.target.closest('[data-preview-open]')) { openCase(state.work); return }
     if (e.target.closest('[data-open-first]')) { openCase(0); return }
+    const slugBtn = e.target.closest('[data-open-slug]')
+    if (slugBtn) {
+      const idx = works.findIndex((w) => w.slug === slugBtn.dataset.openSlug)
+      if (idx >= 0) openCase(idx)
+      return
+    }
     const copyBtn = e.target.closest('[data-copy]')
     if (copyBtn) { copyText(copyBtn); return }
     if (e.target.closest('[data-case-close]')) { closeCase(); return }
@@ -1113,10 +1147,12 @@ function cmdkCommands() {
     { group: c.cmdkJump, id: 'go-index', label: c.cmdkSkills, hint: '05', run: () => jumpTo('#index') },
     { group: c.cmdkJump, id: 'go-contact', label: c.cmdkContact, hint: '06', run: () => jumpTo('#contact') },
     { group: c.cmdkOpen, id: 'open-heineken', label: c.cmdkHeineken, hint: '01', run: () => openFromCmdk(0) },
-    { group: c.cmdkOpen, id: 'open-resumeai', label: c.cmdkResumeai, hint: '02', run: () => openFromCmdk(1) },
-    { group: c.cmdkOpen, id: 'open-telco', label: c.cmdkTelco, hint: '03', run: () => openFromCmdk(2) },
-    { group: c.cmdkOpen, id: 'open-zeroq', label: c.cmdkZeroq, hint: '04', run: () => openFromCmdk(3) },
-    { group: c.cmdkOpen, id: 'open-jetstar', label: c.cmdkJetstar, hint: '05', run: () => openFromCmdk(4) },
+    { group: c.cmdkOpen, id: 'open-credit', label: c.cmdkCredit, hint: '02', run: () => openFromCmdk(1) },
+    { group: c.cmdkOpen, id: 'open-resumeai', label: c.cmdkResumeai, hint: '03', run: () => openFromCmdk(2) },
+    { group: c.cmdkOpen, id: 'open-zzrs', label: c.cmdkZzrs, hint: '04', run: () => openFromCmdk(3) },
+    { group: c.cmdkOpen, id: 'open-telco', label: c.cmdkTelco, hint: '05', run: () => openFromCmdk(4) },
+    { group: c.cmdkOpen, id: 'open-zeroq', label: c.cmdkZeroq, hint: '06', run: () => openFromCmdk(5) },
+    { group: c.cmdkOpen, id: 'open-jetstar', label: c.cmdkJetstar, hint: '07', run: () => openFromCmdk(6) },
     { group: c.cmdkAct, id: 'act-resume', label: c.cmdkResume, run: () => { closeCmdk(); $('[data-resume-link]')?.click() } },
     { group: c.cmdkAct, id: 'act-email', label: c.cmdkCopyEmail, run: () => copyFromCmdk('junyan.lin.2024@business.smu.edu.sg') },
     { group: c.cmdkAct, id: 'act-wechat', label: c.cmdkCopyWechat, run: () => copyFromCmdk('CHRIS_LJY_ATB') },
