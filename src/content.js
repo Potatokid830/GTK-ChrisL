@@ -12,10 +12,11 @@ export const copy = {
     loaderLine: "Loading",
     rail: [
       ["01", "Intro", "#intro"],
-      ["02", "Projects", "#work"],
-      ["03", "Experience", "#practice"],
-      ["04", "Skills", "#index"],
-      ["05", "Contact", "#contact"],
+      ["02", "About", "#about"],
+      ["03", "Projects", "#work"],
+      ["04", "Experience", "#practice"],
+      ["05", "Skills", "#index"],
+      ["06", "Contact", "#contact"],
     ],
     ticker: ["S&P Capital IQ", "DCF", "DDM", "P/E · P/B", "KYC / UBO", "IFRS spreading", "Sector briefs", "Excel models", "CFA Level I", "Bloomberg BMC"],
     heroKicker: "SMU · Quantitative Finance · Class of 2028",
@@ -41,7 +42,7 @@ export const copy = {
     aboutSchool: "Singapore Management University · Lee Kong Chian School of Business · Class of 2028",
     workEyebrow: "03 — Projects",
     workTitle: "Projects",
-    workHint: "Four pieces of coursework from SMU and one personal project. Click one to open it.",
+    workHint: "Four pieces of coursework and one personal project. Click one to open it.",
     workOpen: "Open project",
     practiceEyebrow: "04 — Experience",
     practiceTitle: "Experience",
@@ -58,8 +59,6 @@ export const copy = {
     contactBody:
       "The easiest way to reach me is email — I usually reply within a day.",
     contactEmail: "Email",
-    contactPhone: "Singapore",
-    contactPhoneCn: "China",
     contactLi: "LinkedIn",
     contactWechat: "WeChat",
     copy: "Click to copy",
@@ -88,6 +87,7 @@ export const copy = {
     cmdkAct: "Actions",
     cmdkAsk: "Ask",
     cmdkIntro: "Intro",
+    cmdkAbout: "About",
     cmdkWork: "Projects",
     cmdkPractice: "Experience",
     cmdkSkills: "Skills",
@@ -147,10 +147,11 @@ export const copy = {
     loaderLine: "加载中",
     rail: [
       ["01", "简介", "#intro"],
-      ["02", "项目", "#work"],
-      ["03", "经历", "#practice"],
-      ["04", "技能", "#index"],
-      ["05", "联系", "#contact"],
+      ["02", "关于我", "#about"],
+      ["03", "项目", "#work"],
+      ["04", "经历", "#practice"],
+      ["05", "技能", "#index"],
+      ["06", "联系", "#contact"],
     ],
     ticker: ["S&P Capital IQ", "DCF", "DDM", "P/E · P/B", "KYC / 实控人", "IFRS 财报录入", "行业简报", "Excel 模型", "CFA 一级", "Bloomberg BMC"],
     heroKicker: "新加坡管理大学 · 量化金融 · 2028 届",
@@ -176,7 +177,7 @@ export const copy = {
     aboutSchool: "新加坡管理大学 · 李光前商学院 · 2028 届",
     workEyebrow: "03 — 项目",
     workTitle: "项目",
-    workHint: "四份新大的课程作品和一个个人项目。点开任意一个查看。",
+    workHint: "四份课程作品和一个个人项目。点开任意一个查看。",
     workOpen: "打开项目",
     practiceEyebrow: "04 — 经历",
     practiceTitle: "经历",
@@ -192,8 +193,6 @@ export const copy = {
     contactTitle: "联系我",
     contactBody: "找我最快的方式是邮件，一般一天内回。",
     contactEmail: "邮箱",
-    contactPhone: "新加坡",
-    contactPhoneCn: "中国",
     contactLi: "领英",
     contactWechat: "微信",
     copy: "点击复制",
@@ -222,6 +221,7 @@ export const copy = {
     cmdkAct: "操作",
     cmdkAsk: "提问",
     cmdkIntro: "简介",
+    cmdkAbout: "关于我",
     cmdkWork: "项目",
     cmdkPractice: "经历",
     cmdkSkills: "技能",
@@ -361,8 +361,9 @@ export const skills = [
 const img = (id, n) => `./work/img/${id}/${String(n).padStart(2, "0")}.jpg`
 
 export const works = [
-  {
+{
     id: "heineken",
+    slug: "heineken",
     no: "01",
     widget: "scenarios",
     slides: [{ n: 1, src: img("heineken", 1) }],
@@ -451,9 +452,92 @@ export const works = [
       sensWarn: "ke 与 g 越接近，终值对假设越敏感——这正是 DDM 的局限",
     },
   },
-  {
-    id: "telco",
+{
+    id: "resumeai",
+    slug: "resumeai",
     no: "02",
+    widget: null,
+    slides: [
+      { n: 1, src: "./work/resumeai-cover.png" },
+      { n: 2, src: "./work/resumeai-detail.png" },
+    ],
+    en: {
+      title: "ResumeAI",
+      kind: "Personal project",
+      dek: "An AI resume tool — paste a target job description, upload your resume, and the AI rewrites it to fit the role. Built end to end, on my own.",
+      preview: "An AI resume tool — paste a target job description, upload your resume, and the AI rewrites it to fit the role. Built end to end, on my own.",
+      stamp: "AI",
+      figure: "AI resume tool",
+      figureLabel: "2025 · Solo build",
+      eyebrow: "Personal project · Vibe coding",
+      meta: [["Type", "Personal project (vibe coding)"], ["When", "2025"], ["Team", "Solo"], ["My part", "Everything: product design, front end, back end, AI integration"]],
+      stats: [],
+      captions: {
+        1: "ResumeAI landing page: BEFORE / AFTER cards around the headline",
+        2: "Input screen: target JD, resume upload, project files, notes",
+      },
+      sections: [
+        {
+          h: "The idea",
+          p: "While job hunting I noticed the same resume performs very differently for different roles, and rewriting it by hand for each JD is slow and tedious. ResumeAI lets you paste the target JD and upload your resume; the AI parses the role requirements, rewrites your experience for that role, and outputs a closer-fitting version you can export straight to PDF.",
+        },
+        {
+          h: "What I built",
+          p: "The whole flow works end to end: landing page, JD parsing, resume upload, AI generation and PDF export. The design is dark and restrained, with a BEFORE / AFTER comparison to show the rewrite at a glance.",
+        },
+        {
+          h: "Looking back",
+          p: "I later shelved it on purpose. What I wanted was to fine-tune the content at any time, as if chatting with the AI, while still reliably producing a document in a fixed format. The technology at the time couldn't do both well, so it fell short of the experience I had in mind and I paused it. It was the first product I took all the way through, and the pitfalls and judgement calls from it carried into the projects that followed.",
+        },
+      ],
+      rewriteTitle: "Example: the same bullet, before and after rewriting for a JD",
+      rewriteBefore: "Before",
+      rewriteAfter: "After",
+      rewriteBeforeBody: "Responsible for finance-related work, helped organise data and make reports.",
+      rewriteAfterBody: "Built a monthly performance-analysis template consolidating data from three departments, cutting reporting turnaround from 5 days to 2.",
+      rewriteNote: "Illustrative example",
+    },
+    zh: {
+      title: "ResumeAI（来速米）",
+      kind: "个人项目",
+      dek: "一个 AI 改简历工具：粘贴目标岗位 JD、上传简历，AI 按岗位重写并生成匹配版本。从想法到能跑的产品，自己一个人做。",
+      preview: "一个 AI 改简历工具：粘贴目标岗位 JD、上传简历，AI 按岗位重写并生成匹配版本。从想法到能跑的产品，自己一个人做。",
+      stamp: "AI",
+      figure: "AI 改简历",
+      figureLabel: "2025 · 独立完成",
+      eyebrow: "个人项目 · Vibe coding",
+      meta: [["类型", "个人项目（vibe coding）"], ["时间", "2025"], ["团队", "独立完成"], ["我负责", "全部——产品设计、前后端、AI 集成"]],
+      stats: [],
+      captions: {
+        1: "ResumeAI 落地页：标题两侧是 BEFORE / AFTER 卡片",
+        2: "输入页：目标岗位 JD、简历上传、项目文件、补充说明",
+      },
+      sections: [
+        {
+          h: "想法",
+          p: "求职时发现同一份简历投不同岗位效果差很多，手动按 JD 改又慢又烦。ResumeAI 让你贴上目标 JD、上传原简历，AI 解析岗位要求后把经历按这个岗位重写，输出更贴合的一版，可直接导出 PDF。",
+        },
+        {
+          h: "做了什么",
+          p: "落地页、JD 解析、简历上传、AI 生成、PDF 导出整条流程都跑通了。设计走暗色、克制，用 BEFORE/AFTER 对比直观展示改写效果。",
+        },
+        {
+          h: "复盘",
+          p: "后来主动搁置了：我想要的是能像跟 AI 对话一样随时微调内容、又能稳定输出规定格式的文档，但当时的技术做不到两者兼顾，达不到我预期的体验，就先停了。它是我第一个完整跑通的产品，踩过的坑和攒下的判断都带进了后面的项目。",
+        },
+      ],
+      rewriteTitle: "示例：同一条经历，按 JD 改写前后",
+      rewriteBefore: "改写前",
+      rewriteAfter: "改写后",
+      rewriteBeforeBody: "负责公司财务相关工作，帮忙整理数据和做报告。",
+      rewriteAfterBody: "搭建月度经营分析模板，整合三个部门的数据，把报告出具周期从 5 天缩短到 2 天。",
+      rewriteNote: "示例内容，用于展示工具效果",
+    },
+  },
+{
+    id: "telco",
+    slug: "starhub",
+    no: "03",
     widget: "compare",
     slides: [{ n: 1, src: img("telco", 1) }],
     en: {
@@ -539,9 +623,10 @@ export const works = [
       },
     },
   },
-  {
+{
     id: "zeroq",
-    no: "03",
+    slug: "zeroq",
+    no: "04",
     widget: "mix",
     slides: [{ n: 1, src: img("zeroq", 1) }],
     en: {
@@ -615,10 +700,10 @@ export const works = [
       ],
     },
   },
-
-  {
+{
     id: "jetstar",
-    no: "04",
+    slug: "jetstar",
+    no: "05",
     widget: "levers",
     slides: [{ n: 1, src: img("jetstar", 1) }],
     en: {
@@ -690,86 +775,6 @@ export const works = [
         ["机上体验", 0.57, "中等相关。有贡献，但不是首要杠杆。"],
         ["性价比", 0.5, "中等相关。对廉航来说基本是默认预期。"],
       ],
-    },
-  },  {
-    id: "resumeai",
-    no: "05",
-    widget: null,
-    slides: [
-      { n: 1, src: "./work/resumeai-cover.png" },
-      { n: 2, src: "./work/resumeai-detail.png" },
-    ],
-    en: {
-      title: "ResumeAI",
-      kind: "Personal project",
-      dek: "An AI resume tool — paste a target job description, upload your resume, and the AI rewrites it to fit the role. Built end to end, on my own.",
-      preview: "An AI resume tool — paste a target job description, upload your resume, and the AI rewrites it to fit the role. Built end to end, on my own.",
-      stamp: "AI",
-      figure: "AI resume tool",
-      figureLabel: "2025 · Solo build",
-      eyebrow: "Personal project · Vibe coding",
-      meta: [["Type", "Personal project (vibe coding)"], ["When", "2025"], ["Team", "Solo"], ["My part", "Everything: product design, front end, back end, AI integration"]],
-      stats: [],
-      captions: {
-        1: "ResumeAI landing page: BEFORE / AFTER cards around the headline",
-        2: "Input screen: target JD, resume upload, project files, notes",
-      },
-      sections: [
-        {
-          h: "The idea",
-          p: "While job hunting I noticed the same resume performs very differently for different roles, and rewriting it by hand for each JD is slow and tedious. ResumeAI lets you paste the target JD and upload your resume; the AI parses the role requirements, rewrites your experience for that role, and outputs a closer-fitting version you can export straight to PDF.",
-        },
-        {
-          h: "What I built",
-          p: "The whole flow works end to end: landing page, JD parsing, resume upload, AI generation and PDF export. The design is dark and restrained, with a BEFORE / AFTER comparison to show the rewrite at a glance.",
-        },
-        {
-          h: "Looking back",
-          p: "I later shelved it on purpose. What I wanted was to fine-tune the content at any time, as if chatting with the AI, while still reliably producing a document in a fixed format. The technology at the time couldn't do both well, so it fell short of the experience I had in mind and I paused it. It was the first product I took all the way through, and the pitfalls and judgement calls from it carried into the projects that followed.",
-        },
-      ],
-      rewriteTitle: "Example: the same bullet, before and after rewriting for a JD",
-      rewriteBefore: "Before",
-      rewriteAfter: "After",
-      rewriteBeforeBody: "Responsible for finance-related work, helped organise data and make reports.",
-      rewriteAfterBody: "Built a monthly performance-analysis template consolidating data from three departments, cutting reporting turnaround from 5 days to 2.",
-      rewriteNote: "Illustrative example",
-    },
-    zh: {
-      title: "ResumeAI（来速米）",
-      kind: "个人项目",
-      dek: "一个 AI 改简历工具：粘贴目标岗位 JD、上传简历，AI 按岗位重写并生成匹配版本。从想法到能跑的产品，自己一个人做。",
-      preview: "一个 AI 改简历工具：粘贴目标岗位 JD、上传简历，AI 按岗位重写并生成匹配版本。从想法到能跑的产品，自己一个人做。",
-      stamp: "AI",
-      figure: "AI 改简历",
-      figureLabel: "2025 · 独立完成",
-      eyebrow: "个人项目 · Vibe coding",
-      meta: [["类型", "个人项目（vibe coding）"], ["时间", "2025"], ["团队", "独立完成"], ["我负责", "全部——产品设计、前后端、AI 集成"]],
-      stats: [],
-      captions: {
-        1: "ResumeAI 落地页：标题两侧是 BEFORE / AFTER 卡片",
-        2: "输入页：目标岗位 JD、简历上传、项目文件、补充说明",
-      },
-      sections: [
-        {
-          h: "想法",
-          p: "求职时发现同一份简历投不同岗位效果差很多，手动按 JD 改又慢又烦。ResumeAI 让你贴上目标 JD、上传原简历，AI 解析岗位要求后把经历按这个岗位重写，输出更贴合的一版，可直接导出 PDF。",
-        },
-        {
-          h: "做了什么",
-          p: "落地页、JD 解析、简历上传、AI 生成、PDF 导出整条流程都跑通了。设计走暗色、克制，用 BEFORE/AFTER 对比直观展示改写效果。",
-        },
-        {
-          h: "复盘",
-          p: "后来主动搁置了：我想要的是能像跟 AI 对话一样随时微调内容、又能稳定输出规定格式的文档，但当时的技术做不到两者兼顾，达不到我预期的体验，就先停了。它是我第一个完整跑通的产品，踩过的坑和攒下的判断都带进了后面的项目。",
-        },
-      ],
-      rewriteTitle: "示例：同一条经历，按 JD 改写前后",
-      rewriteBefore: "改写前",
-      rewriteAfter: "改写后",
-      rewriteBeforeBody: "负责公司财务相关工作，帮忙整理数据和做报告。",
-      rewriteAfterBody: "搭建月度经营分析模板，整合三个部门的数据，把报告出具周期从 5 天缩短到 2 天。",
-      rewriteNote: "示例内容，用于展示工具效果",
     },
   },
 ]

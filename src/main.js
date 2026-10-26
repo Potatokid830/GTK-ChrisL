@@ -47,9 +47,6 @@ function applyCopy() {
     const key = el.dataset.i18n
     if (t()[key] != null) el.textContent = t()[key]
   })
-  // The resume download follows the site language.
-  const resume = $('[data-resume-link]')
-  if (resume) resume.href = state.lang === 'zh' ? './Junyan_Lin_Resume_CN.pdf' : './Junyan_Lin_Resume.pdf'
   renderRail()
   renderTicker()
   renderFigures()
@@ -649,13 +646,44 @@ function bindRewrite(root) {
 
 /* ---------- project dossier ---------- */
 
-function openCase(idx) {
+function projectHref(slug) {
+  const url = new URL(location.href)
+  if (slug) url.searchParams.set('project', slug)
+  else url.searchParams.delete('project')
+  return url.pathname + url.search + url.hash
+}
+
+function writeProjectUrl(slug, mode) {
+  const next = projectHref(slug)
+  if (mode === 'push') history.pushState({ project: slug || null }, '', next)
+  else history.replaceState({ project: slug || null }, '', next)
+}
+
+// One history entry per open dossier, so Back closes it instead of walking projects.
+let projectPushed = false
+
+function syncProjectUrl(slug, firstOpen) {
+  const current = new URLSearchParams(location.search).get('project')
+  if (current === slug) {
+    projectPushed = true
+    return
+  }
+  if (!firstOpen && projectPushed) writeProjectUrl(slug, 'replace')
+  else {
+    writeProjectUrl(slug, 'push')
+    projectPushed = true
+  }
+}
+
+function openCase(idx, opts = {}) {
   pauseDj()
   const first = state.caseIdx == null
   state.caseIdx = idx
   renderCase()
   const root = $('[data-dossier]')
   root.hidden = false
+  root.inert = false
+  root.removeAttribute('aria-hidden')
   document.body.classList.add('is-case')
   $('[data-cursor-badge]')?.classList.remove('is-on')
   state.lenis?.stop()
@@ -663,6 +691,22 @@ function openCase(idx) {
   root.scrollTop = 0
   if (!first) root.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' })
   syncAskFab()
+  if (!opts.fromHistory) syncProjectUrl(works[idx].slug, first)
+}
+
+function openProjectFromUrl() {
+  const slug = new URLSearchParams(location.search).get('project')
+  if (!slug) return
+  const idx = works.findIndex((w) => w.slug === slug)
+  if (idx < 0) {
+    writeProjectUrl(null, 'replace')
+    return
+  }
+  // Land on the clean page, then push the project, so Back closes the dossier and stays here.
+  writeProjectUrl(null, 'replace')
+  writeProjectUrl(slug, 'push')
+  projectPushed = true
+  openCase(idx, { fromHistory: true })
 }
 
 function renderCase() {
@@ -717,19 +761,32 @@ function renderCase() {
   else window.setTimeout(() => title.classList.add('is-in'), 250)
 }
 
-function closeCase() {
+function closeCase(opts = {}) {
   const root = $('[data-dossier]')
-  root.classList.remove('is-open')
-  document.body.classList.remove('is-case')
-  state.caseIdx = null
-  state.lenis?.start()
-  syncAskFab()
-  window.setTimeout(() => {
-    if (state.caseIdx == null) {
-      root.hidden = true
-      $('[data-case-body]').innerHTML = ''
-    }
-  }, 420)
+  if (!root) return
+  const wasOpen = state.caseIdx != null
+  if (wasOpen) {
+    root.classList.remove('is-open')
+    root.inert = true
+    root.setAttribute('aria-hidden', 'true')
+    document.body.classList.remove('is-case')
+    state.caseIdx = null
+    state.lenis?.start()
+    syncAskFab()
+    window.setTimeout(() => {
+      if (state.caseIdx == null) {
+        root.hidden = true
+        $('[data-case-body]').innerHTML = ''
+      }
+    }, 420)
+  }
+  if (opts.fromHistory) return
+  if (projectPushed) {
+    projectPushed = false
+    history.back()
+    return
+  }
+  if (wasOpen && new URLSearchParams(location.search).get('project')) writeProjectUrl(null, 'replace')
 }
 
 /* ---------- chrome ---------- */
@@ -798,7 +855,7 @@ function clock() {
   setInterval(stamp, 15000)
 }
 
-const railSections = ['intro', 'work', 'practice', 'index', 'contact']
+const railSections = ['intro', 'about', 'work', 'practice', 'index', 'contact']
 
 function placeRailMark() {
   const rail = $('.rail')
@@ -1050,15 +1107,16 @@ function cmdkCommands() {
   const c = t()
   return [
     { group: c.cmdkJump, id: 'go-intro', label: c.cmdkIntro, hint: '01', run: () => jumpTo('#intro') },
-    { group: c.cmdkJump, id: 'go-work', label: c.cmdkWork, hint: '02', run: () => jumpTo('#work') },
-    { group: c.cmdkJump, id: 'go-practice', label: c.cmdkPractice, hint: '03', run: () => jumpTo('#practice') },
-    { group: c.cmdkJump, id: 'go-index', label: c.cmdkSkills, hint: '04', run: () => jumpTo('#index') },
-    { group: c.cmdkJump, id: 'go-contact', label: c.cmdkContact, hint: '05', run: () => jumpTo('#contact') },
+    { group: c.cmdkJump, id: 'go-about', label: c.cmdkAbout, hint: '02', run: () => jumpTo('#about') },
+    { group: c.cmdkJump, id: 'go-work', label: c.cmdkWork, hint: '03', run: () => jumpTo('#work') },
+    { group: c.cmdkJump, id: 'go-practice', label: c.cmdkPractice, hint: '04', run: () => jumpTo('#practice') },
+    { group: c.cmdkJump, id: 'go-index', label: c.cmdkSkills, hint: '05', run: () => jumpTo('#index') },
+    { group: c.cmdkJump, id: 'go-contact', label: c.cmdkContact, hint: '06', run: () => jumpTo('#contact') },
     { group: c.cmdkOpen, id: 'open-heineken', label: c.cmdkHeineken, hint: '01', run: () => openFromCmdk(0) },
-    { group: c.cmdkOpen, id: 'open-telco', label: c.cmdkTelco, hint: '02', run: () => openFromCmdk(1) },
-    { group: c.cmdkOpen, id: 'open-zeroq', label: c.cmdkZeroq, hint: '03', run: () => openFromCmdk(2) },
-    { group: c.cmdkOpen, id: 'open-jetstar', label: c.cmdkJetstar, hint: '04', run: () => openFromCmdk(3) },
-    { group: c.cmdkOpen, id: 'open-resumeai', label: c.cmdkResumeai, hint: '05', run: () => openFromCmdk(4) },
+    { group: c.cmdkOpen, id: 'open-resumeai', label: c.cmdkResumeai, hint: '02', run: () => openFromCmdk(1) },
+    { group: c.cmdkOpen, id: 'open-telco', label: c.cmdkTelco, hint: '03', run: () => openFromCmdk(2) },
+    { group: c.cmdkOpen, id: 'open-zeroq', label: c.cmdkZeroq, hint: '04', run: () => openFromCmdk(3) },
+    { group: c.cmdkOpen, id: 'open-jetstar', label: c.cmdkJetstar, hint: '05', run: () => openFromCmdk(4) },
     { group: c.cmdkAct, id: 'act-resume', label: c.cmdkResume, run: () => { closeCmdk(); $('[data-resume-link]')?.click() } },
     { group: c.cmdkAct, id: 'act-email', label: c.cmdkCopyEmail, run: () => copyFromCmdk('junyan.lin.2024@business.smu.edu.sg') },
     { group: c.cmdkAct, id: 'act-wechat', label: c.cmdkCopyWechat, run: () => copyFromCmdk('CHRIS_LJY_ATB') },
@@ -1624,6 +1682,19 @@ bindOffhours()
 loadMarkets()
 loadBuild()
 works.forEach((w) => { const im = new Image(); im.src = w.slides[0].src })
+window.addEventListener('popstate', () => {
+  const slug = new URLSearchParams(location.search).get('project')
+  if (!slug) {
+    projectPushed = false
+    if (state.caseIdx != null) closeCase({ fromHistory: true })
+    return
+  }
+  const idx = works.findIndex((w) => w.slug === slug)
+  if (idx < 0) return
+  projectPushed = true
+  openCase(idx, { fromHistory: true })
+})
+openProjectFromUrl()
 loader()
 console.info(
   `[site] motion: ${reduced ? 'REDUCED (Windows animation effects may be off)' : 'full'} | pointer: ${finePointer ? 'fine' : 'coarse'} | scroll: ${state.lenis ? 'lenis' : 'native'}`,
