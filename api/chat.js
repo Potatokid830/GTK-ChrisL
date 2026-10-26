@@ -8,14 +8,39 @@ const SITE_LIMIT = 300
 const MAX_QUESTION = 300
 const MAX_TURNS = 6
 
+const ENV_NAMES = ['ANTHROPIC_API_KEY', 'UPSTASH_REDIS_REST_URL', 'UPSTASH_REDIS_REST_TOKEN']
+
+function readError(err) {
+  if (!err) return 'read failed'
+  const code = err.code ? String(err.code) : ''
+  const message = err.message ? String(err.message) : 'read failed'
+  return code ? `${code} ${message}` : message
+}
+
+function redact(text) {
+  let out = String(text || '')
+  for (const name of ENV_NAMES) {
+    const value = process.env[name]
+    if (value) out = out.split(value).join(`[${name}]`)
+  }
+  return out.slice(0, 500)
+}
+
+function missingEnvNames() {
+  return ENV_NAMES.filter((name) => !process.env[name])
+}
+
 let knowledge = ''
+let knowledgeError = ''
 try {
   knowledge = readFileSync(join(process.cwd(), 'ai', 'knowledge.md'), 'utf8')
-} catch {
+} catch (err) {
+  const first = readError(err)
   try {
     knowledge = readFileSync(join(__dirname, '..', 'ai', 'knowledge.md'), 'utf8')
-  } catch {
+  } catch (err2) {
     knowledge = ''
+    knowledgeError = `${first}; ${readError(err2)}`
   }
 }
 
@@ -62,19 +87,51 @@ function hourStamp(d = new Date()) {
   return d.toISOString().slice(0, 13)
 }
 
+function redisMessage(text) {
+  let message = String(text || '')
+  try {
+    const parsed = JSON.parse(message)
+    if (typeof parsed.error === 'string') message = parsed.error
+    else if (parsed.error && parsed.error.message) message = String(parsed.error.message)
+  } catch {
+    /* keep the raw body */
+  }
+  return redact(message)
+}
+
+function redisFail(status, detail) {
+  const err = new Error('redis')
+  err.stage = 'redis'
+  err.status = status
+  err.detail = detail
+  return err
+}
+
 async function redis(cmds) {
   const url = process.env.UPSTASH_REDIS_REST_URL
   const token = process.env.UPSTASH_REDIS_REST_TOKEN
-  if (!url || !token) throw new Error('redis')
-  const res = await fetch(`${url.replace(/\/$/, '')}/pipeline`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(cmds),
-  })
-  if (!res.ok) throw new Error('redis')
+  let res
+  try {
+    res = await fetch(`${url.replace(/\/$/, '')}/pipeline`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cmds),
+    })
+  } catch (err) {
+    throw redisFail(0, redact(err && err.message ? err.message : 'fetch failed'))
+  }
+  if (!res.ok) {
+    let text = ''
+    try {
+      text = await res.text()
+    } catch (err) {
+      text = err && err.message ? err.message : ''
+    }
+    throw redisFail(res.status, redisMessage(text))
+  }
   return res.json()
 }
 
@@ -162,7 +219,10 @@ module.exports = async function handler(req, res) {
     res.status(405).json({ error: 'unavailable' })
     return
   }
-  if (!process.env.ANTHROPIC_API_KEY || !knowledge) {
+  const missing = missingEnvNames()
+  if (missing.length) console.error('missing_env', missing.join(','))
+  if (!knowledge) console.error('kb_read', redact(knowledgeError || 'empty'))
+  if (missing.length || !knowledge) {
     deny(res, 503, origin)
     return
   }
@@ -178,7 +238,16 @@ module.exports = async function handler(req, res) {
   try {
     await rateLimit(clientIp(req))
   } catch (err) {
-    deny(res, err && err.code === 'limited' ? 429 : 503, origin)
+    if (err && err.code === 'limited') {
+      deny(res, 429, origin)
+      return
+    }
+    console.error(
+      'redis',
+      err && err.status != null ? err.status : 0,
+      err && err.detail ? err.detail : redact(err && err.message ? err.message : 'redis failed'),
+    )
+    deny(res, 503, origin)
     return
   }
 
@@ -200,12 +269,33 @@ module.exports = async function handler(req, res) {
         messages,
       }),
     })
-  } catch {
+  } catch (err) {
+    console.error('upstream', 0, '', redact(err && err.message ? err.message : 'fetch failed'))
     deny(res, 503, origin)
     return
   }
 
   if (!upstream.ok || !upstream.body) {
+    let errorType = ''
+    let errorMessage = upstream && upstream.body ? '' : 'empty body'
+    if (upstream && !upstream.ok) {
+      let text = ''
+      try {
+        text = await upstream.text()
+      } catch (err) {
+        text = err && err.message ? err.message : ''
+      }
+      errorMessage = text
+      try {
+        const parsed = JSON.parse(text)
+        const failure = parsed && parsed.error && typeof parsed.error === 'object' ? parsed.error : parsed
+        if (failure && failure.type) errorType = String(failure.type)
+        if (failure && failure.message) errorMessage = String(failure.message)
+      } catch {
+        /* keep the raw body */
+      }
+    }
+    console.error('upstream', upstream ? upstream.status : 0, redact(errorType), redact(errorMessage))
     deny(res, 503, origin)
     return
   }
