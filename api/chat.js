@@ -10,6 +10,22 @@ const MAX_TURNS = 6
 
 const ENV_NAMES = ['ANTHROPIC_API_KEY', 'UPSTASH_REDIS_REST_URL', 'UPSTASH_REDIS_REST_TOKEN']
 
+function cleanEnv(name) {
+  const raw = process.env[name]
+  if (raw == null) return ''
+  let value = String(raw).trim()
+  if (
+    value.length >= 2 &&
+    ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'")))
+  ) {
+    value = value.slice(1, -1).trim()
+  }
+  if (name === 'UPSTASH_REDIS_REST_URL') value = value.replace(/\/+$/, '')
+  return value
+}
+
+const env = Object.fromEntries(ENV_NAMES.map((name) => [name, cleanEnv(name)]))
+
 function readError(err) {
   if (!err) return 'read failed'
   const code = err.code ? String(err.code) : ''
@@ -20,14 +36,15 @@ function readError(err) {
 function redact(text) {
   let out = String(text || '')
   for (const name of ENV_NAMES) {
-    const value = process.env[name]
-    if (value) out = out.split(value).join(`[${name}]`)
+    for (const value of [process.env[name], env[name]]) {
+      if (value) out = out.split(value).join(`[${name}]`)
+    }
   }
   return out.slice(0, 500)
 }
 
 function missingEnvNames() {
-  return ENV_NAMES.filter((name) => !process.env[name])
+  return ENV_NAMES.filter((name) => !env[name])
 }
 
 let knowledge = ''
@@ -108,8 +125,8 @@ function redisFail(status, detail) {
 }
 
 async function redis(cmds) {
-  const url = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
+  const url = env.UPSTASH_REDIS_REST_URL
+  const token = env.UPSTASH_REDIS_REST_TOKEN
   let res
   try {
     res = await fetch(`${url.replace(/\/$/, '')}/pipeline`, {
@@ -219,6 +236,9 @@ module.exports = async function handler(req, res) {
     res.status(405).json({ error: 'unavailable' })
     return
   }
+  if (env.UPSTASH_REDIS_REST_URL && !env.UPSTASH_REDIS_REST_URL.startsWith('https://')) {
+    console.error('redis_bad_url')
+  }
   const missing = missingEnvNames()
   if (missing.length) console.error('missing_env', missing.join(','))
   if (!knowledge) console.error('kb_read', redact(knowledgeError || 'empty'))
@@ -257,7 +277,7 @@ module.exports = async function handler(req, res) {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'x-api-key': env.ANTHROPIC_API_KEY,
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
