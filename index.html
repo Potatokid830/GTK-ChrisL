@@ -9,6 +9,14 @@
       content="Junyan (Chris) Lin. Quantitative Finance at SMU, corporate banking intern at Bank of China (Singapore). Equity research, financial statement analysis, statistics and marketing projects."
     />
     <meta name="theme-color" content="#f1ece3" />
+    <script>
+      try {
+        if (localStorage.getItem("jl-theme") === "dark") {
+          document.documentElement.setAttribute("data-theme", "dark")
+          document.querySelector('meta[name="theme-color"]').setAttribute("content", "#1c1b18")
+        }
+      } catch (e) {}
+    </script>
     <meta property="og:title" content="Junyan Lin &mdash; Quantitative Finance, SMU" />
     <meta property="og:description" content="Projects, experience and contact. Singapore." />
     <meta property="og:type" content="website" />
@@ -47,8 +55,13 @@
         <time id="clock" datetime="">--:--</time>
       </p>
       <div class="topbar__actions">
+        <button class="text-btn" type="button" data-theme-toggle data-magnetic>Dark</button>
         <button class="text-btn" type="button" data-lang-toggle data-i18n="langLabel" data-magnetic>&#x4E2D;&#x6587;</button>
-        <a class="text-btn" href="./Junyan_Lin_Resume.pdf" download data-resume-link data-i18n="resume" data-magnetic>Resume</a>
+        <button class="text-btn cmdk-open" type="button" data-cmdk-open data-magnetic>
+          <span class="cmdk-open__desk">&#x2318;K</span>
+          <span class="cmdk-open__mob" data-i18n="cmdkMenu">Menu</span>
+        </button>
+        <a class="text-btn topbar__resume" href="./Junyan_Lin_Resume.pdf" download data-resume-link data-i18n="resume" data-magnetic>Resume</a>
         <a class="text-btn text-btn--solid" href="mailto:junyan.lin.2024@business.smu.edu.sg" data-i18n="write" data-magnetic>Email</a>
       </div>
     </header>
@@ -163,10 +176,18 @@
           <p class="eyebrow eyebrow--light" data-i18n="djEyebrow" data-reveal></p>
           <h2 class="display display--light" data-i18n="djTitle" data-split>DJ</h2>
           <p class="offhours__body" data-i18n="djBody" data-reveal style="--i: 2"></p>
+          <div class="dj-player" data-dj-player data-reveal style="--i: 3">
+            <button class="dj-player__btn" type="button" data-dj-toggle aria-pressed="false">
+              <span class="dj-player__icon" data-dj-icon aria-hidden="true"></span>
+            </button>
+            <div class="dj-player__main">
+              <p class="dj-player__cap" data-i18n="djClip">30-second excerpt &#x00B7; my mix</p>
+              <div class="dj-player__wave" data-dj-wave role="slider" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0" tabindex="0"></div>
+              <p class="dj-player__time"><span data-dj-cur>0:00</span> / <span data-dj-dur>0:30</span></p>
+            </div>
+            <audio data-dj-audio preload="none"></audio>
+          </div>
         </div>
-        <figure class="offhours__inset" data-reveal style="--i: 4">
-          <img src="./work/dj/desk.jpg" alt="Rekordbox waveforms on the laptop, controller in the foreground" width="960" height="720" />
-        </figure>
       </section>
 
       <section class="bball" aria-label="Basketball">
@@ -212,6 +233,46 @@
         <p class="footer-note" data-i18n="footerNote" data-reveal></p>
       </section>
     </main>
+
+    <div class="cmdk" data-cmdk hidden>
+      <div class="cmdk__mask" data-cmdk-mask></div>
+      <div
+        class="cmdk__panel"
+        data-cmdk-panel
+        data-lenis-prevent
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cmdk-title"
+      >
+        <p class="cmdk__kicker" id="cmdk-title" data-i18n="cmdkTitle">Command palette</p>
+        <div data-cmdk-home>
+          <input
+            class="cmdk__search"
+            type="search"
+            data-cmdk-input
+            autocomplete="off"
+            spellcheck="false"
+            enterkeyhint="go"
+            aria-controls="cmdk-list"
+          />
+          <div class="cmdk__list" id="cmdk-list" data-cmdk-list role="listbox"></div>
+        </div>
+        <div class="cmdk__ai" data-cmdk-ai hidden>
+          <button class="cmdk__back" type="button" data-cmdk-back>
+            <span aria-hidden="true">&larr;</span> <span data-i18n="cmdkBack">Back to commands</span>
+          </button>
+          <p class="cmdk__disclaimer" data-i18n="aiDisclaimer"></p>
+          <div class="cmdk__thread" data-ai-thread></div>
+          <div class="cmdk__presets" data-ai-presets></div>
+          <form class="cmdk__form" data-ai-form>
+            <label class="visually-hidden" for="ai-q" data-i18n="aiPlaceholder">Ask a question</label>
+            <input class="cmdk__search" id="ai-q" type="text" data-ai-input maxlength="300" autocomplete="off" />
+            <button class="cmdk__send" type="submit" data-i18n="aiSend">Send</button>
+          </form>
+          <p class="cmdk__hint" data-ai-hint hidden></p>
+        </div>
+      </div>
+    </div>
 
     <div class="dossier" data-dossier data-lenis-prevent hidden>
       <header class="dossier__bar">
