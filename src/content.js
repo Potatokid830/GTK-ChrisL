@@ -231,6 +231,10 @@ export const skills = [
     en: { group: "Currently", items: ["CFA Level I, Nov 2026", "Bloomberg Market Concepts, 2026", "Sector work: Thailand data centres, digital ads"] },
     zh: { group: "进行中", items: ["CFA 一级，2026 年 11 月", "Bloomberg 市场概念证书，2026", "行业研究：泰国数据中心、数字广告"] },
   },
+  {
+    en: { group: "Engineering & AI", items: ["Vibe coding (Cursor)", "HTML · CSS · JavaScript", "Prompt design & LLM apps", "Vercel deployment", "Python (learning)"] },
+    zh: { group: "工程与 AI", items: ["Vibe coding（Cursor）", "HTML · CSS · JavaScript", "Prompt 设计与 LLM 应用", "Vercel 部署", "Python（在学）"] },
+  },
 ]
 
 const img = (id, n) => `./work/img/${id}/${String(n).padStart(2, "0")}.jpg`
@@ -274,6 +278,14 @@ export const works = [
         { label: "Base · 36% payout", value: "€75.23", delta: "+11%" },
         { label: "Bull · 40% payout", value: "€83.50", delta: "+23%" },
       ],
+      sensTitle: "Target price sensitivity (36% base payout, market price €68.08)",
+      sensKe: "Cost of equity",
+      sensG: "Terminal growth",
+      sensBuy: "BUY",
+      sensHold: "HOLD",
+      sensSell: "SELL",
+      sensRule: "Rating rule: more than +10% vs market price is BUY, within ±10% is HOLD, below −10% is SELL",
+      sensWarn: "As ke approaches g, the terminal value becomes extremely sensitive — a known limit of the DDM",
     },
     zh: {
       title: "Heineken N.V.",
@@ -308,6 +320,14 @@ export const works = [
         { label: "基准 · 分红率 36%", value: "€75.23", delta: "+11%" },
         { label: "乐观 · 分红率 40%", value: "€83.50", delta: "+23%" },
       ],
+      sensTitle: "目标价敏感性（基准分红率 36%，市价 €68.08）",
+      sensKe: "权益成本 ke",
+      sensG: "永续增长率 g",
+      sensBuy: "买入",
+      sensHold: "持有",
+      sensSell: "卖出",
+      sensRule: "评级规则：相对市价 >+10% 买入，±10% 内持有，<−10% 卖出",
+      sensWarn: "ke 与 g 越接近，终值对假设越敏感——这正是 DDM 的局限",
     },
   },
   {
@@ -587,6 +607,12 @@ export const works = [
           p: "I later shelved it on purpose. What I wanted was to fine-tune the content at any time, as if chatting with the AI, while still reliably producing a document in a fixed format. The technology at the time couldn't do both well, so it fell short of the experience I had in mind and I paused it. It was the first product I took all the way through, and the pitfalls and judgement calls from it carried into the projects that followed.",
         },
       ],
+      rewriteTitle: "Example: the same bullet, before and after rewriting for a JD",
+      rewriteBefore: "Before",
+      rewriteAfter: "After",
+      rewriteBeforeBody: "Responsible for finance-related work, helped organise data and make reports.",
+      rewriteAfterBody: "Built a monthly performance-analysis template consolidating data from three departments, cutting reporting turnaround from 5 days to 2.",
+      rewriteNote: "Illustrative example",
     },
     zh: {
       title: "ResumeAI（来速米）",
@@ -617,6 +643,30 @@ export const works = [
           p: "后来主动搁置了：我想要的是能像跟 AI 对话一样随时微调内容、又能稳定输出规定格式的文档，但当时的技术做不到两者兼顾，达不到我预期的体验，就先停了。它是我第一个完整跑通的产品，踩过的坑和攒下的判断都带进了后面的项目。",
         },
       ],
+      rewriteTitle: "示例：同一条经历，按 JD 改写前后",
+      rewriteBefore: "改写前",
+      rewriteAfter: "改写后",
+      rewriteBeforeBody: "负责公司财务相关工作，帮忙整理数据和做报告。",
+      rewriteAfterBody: "搭建月度经营分析模板，整合三个部门的数据，把报告出具周期从 5 天缩短到 2 天。",
+      rewriteNote: "示例内容，用于展示工具效果",
     },
   },
 ]
+
+// Heineken DDM sensitivity table from the original report. Rows are g, columns are ke.
+export const heinekenSens = {
+  ke: [5.41, 5.97, 6.32, 6.38, 6.73, 6.96, 7.09, 7.23, 7.64, 8.43],
+  g: [2.0, 2.5, 3.0, 3.3, 3.6, 3.8, 4.0],
+  ke0: 4,
+  g0: 3,
+  market: 68.08,
+  matrix: [
+    [81.1, 69.2, 63.5, 62.6, 57.8, 55.0, 53.6, 52.0, 48.1, 41.9],
+    [92.9, 77.5, 70.2, 69.1, 63.2, 59.9, 58.1, 56.3, 51.7, 44.5],
+    [109.6, 88.5, 79.0, 77.6, 70.1, 65.9, 63.8, 61.6, 56.0, 47.6],
+    [123.4, 97.0, 85.7, 84.0, 75.2, 70.4, 68.0, 65.4, 59.1, 49.7],
+    [141.8, 107.8, 93.8, 91.8, 81.3, 75.6, 72.8, 69.9, 62.6, 52.1],
+    [157.9, 116.6, 100.3, 98.0, 86.1, 79.7, 76.5, 73.3, 65.3, 53.9],
+    [178.5, 127.2, 107.9, 105.2, 91.5, 84.3, 80.7, 77.1, 68.3, 55.8],
+  ],
+}

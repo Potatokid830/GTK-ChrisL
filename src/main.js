@@ -1,5 +1,5 @@
 // ASCII only in this file. All visible copy lives in content.js.
-import { copy, experience, skills, works } from './content.js'
+import { copy, experience, heinekenSens, skills, works } from './content.js'
 
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
@@ -385,12 +385,101 @@ function widgetMix(c) {
   </div>`
 }
 
+function widgetSensitivity(c) {
+  const { ke, g, ke0, g0, matrix } = heinekenSens
+  const lo = Math.min(...matrix.flat())
+  const hi = Math.max(...matrix.flat())
+  const shade = (v) => Math.round(10 + ((v - lo) / (hi - lo)) * 52)
+  const cells = g
+    .map((gv, gi) => {
+      const row = matrix[gi]
+        .map((v, ki) => {
+          const on = gi === g0 && ki === ke0 ? ' is-on' : ''
+          return `<button type="button" class="sens__cell${on}" data-sens-cell data-ke="${ki}" data-g="${gi}" style="background:color-mix(in srgb, var(--ink) ${shade(v)}%, var(--paper))" aria-label="${esc(`${fmtKe(ke[ki])} / ${fmtG(gv)}`)}"></button>`
+        })
+        .join('')
+      return `<div class="sens__row" role="row"><span class="sens__glabel">${esc(fmtG(gv))}</span>${row}</div>`
+    })
+    .join('')
+  return `<div class="widget widget--sens" data-widget="sens">
+    <h3>${esc(c.sensTitle)}</h3>
+    <div class="widget-readout">
+      <span class="big" data-sens-price>\u20ac75.23</span>
+      <span class="sens__meta">
+        <span class="delta" data-sens-delta>+11%</span>
+        <span class="sens__tag is-buy" data-sens-tag>${esc(c.sensBuy)}</span>
+      </span>
+    </div>
+    <div class="sens__ctrl">
+      <div class="sens__lab"><span>${esc(c.sensKe)}</span><span data-sens-ke-val>${esc(fmtKe(ke[ke0]))}</span></div>
+      <input class="sens__range" type="range" min="0" max="${ke.length - 1}" step="1" value="${ke0}" data-sens-ke aria-label="${esc(c.sensKe)}" />
+      <div class="sens__step">
+        <button type="button" data-sens-ke-d="-1" aria-label="-">\u2212</button>
+        <button type="button" data-sens-ke-d="1" aria-label="+">+</button>
+      </div>
+    </div>
+    <div class="sens__ctrl">
+      <div class="sens__lab"><span>${esc(c.sensG)}</span><span data-sens-g-val>${esc(fmtG(g[g0]))}</span></div>
+      <input class="sens__range" type="range" min="0" max="${g.length - 1}" step="1" value="${g0}" data-sens-g aria-label="${esc(c.sensG)}" />
+      <div class="sens__step">
+        <button type="button" data-sens-g-d="-1" aria-label="-">\u2212</button>
+        <button type="button" data-sens-g-d="1" aria-label="+">+</button>
+      </div>
+    </div>
+    <div class="sens__heat-wrap">
+      <div class="sens__heat" role="grid">${cells}</div>
+    </div>
+    <p class="sens__warn" data-sens-warn hidden>${esc(c.sensWarn)}</p>
+    <p class="sens__rule">${esc(c.sensRule)}</p>
+  </div>`
+}
+
+function widgetRewrite(c) {
+  return `<div class="rewrite" data-rewrite>
+    <h3>${esc(c.rewriteTitle)}</h3>
+    <div class="rewrite__frame" data-rewrite-frame>
+      <div class="rewrite__pane rewrite__pane--after">
+        <div class="rewrite__inner">
+          <small>${esc(c.rewriteAfter)}</small>
+          <p>${esc(c.rewriteAfterBody)}</p>
+        </div>
+      </div>
+      <div class="rewrite__pane rewrite__pane--before" data-rewrite-before>
+        <div class="rewrite__inner">
+          <small>${esc(c.rewriteBefore)}</small>
+          <p>${esc(c.rewriteBeforeBody)}</p>
+        </div>
+      </div>
+      <div class="rewrite__handle" data-rewrite-handle role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-label="${esc(c.rewriteTitle)}"></div>
+    </div>
+    <p class="rewrite__note">${esc(c.rewriteNote)}</p>
+  </div>`
+}
+
 function widgetFor(w, c) {
-  if (w.widget === 'scenarios') return widgetScenarios(c)
+  if (w.widget === 'scenarios') return widgetScenarios(c) + widgetSensitivity(c)
   if (w.widget === 'compare') return widgetCompare(c)
   if (w.widget === 'levers') return widgetLevers(c)
   if (w.widget === 'mix') return widgetMix(c)
   return ''
+}
+
+function fmtKe(v) {
+  return v.toFixed(2) + '%'
+}
+function fmtG(v) {
+  return v.toFixed(1) + '%'
+}
+
+function sensLookup(ki, gi) {
+  const { ke, g, ke0, g0, market, matrix } = heinekenSens
+  const raw = ki === ke0 && gi === g0 ? 75.23 : matrix[gi][ki]
+  const price = ki === ke0 && gi === g0 ? '\u20ac75.23' : '\u20ac' + matrix[gi][ki].toFixed(1)
+  const pct = Math.round(((raw - market) / market) * 100)
+  const delta = (pct > 0 ? '+' : pct < 0 ? '\u2212' : '') + Math.abs(pct) + '%'
+  const rating = pct > 10 ? 'buy' : pct >= -10 ? 'hold' : 'sell'
+  const warn = ke[ki] - g[gi] < 2.5
+  return { price, delta, rating, warn }
 }
 
 function bindWidgets(root) {
@@ -413,6 +502,104 @@ function bindWidgets(root) {
     requestAnimationFrame(() => {
       el.style.width = `${(Number(el.dataset.fill) / 0.7) * 100}%`
     })
+  })
+  bindSens(root)
+  bindRewrite(root)
+}
+
+function bindSens(root) {
+  const box = $('[data-widget="sens"]', root)
+  if (!box) return
+  const c = works.find((w) => w.id === 'heineken')[state.lang]
+  const { ke, g } = heinekenSens
+  let ki = heinekenSens.ke0
+  let gi = heinekenSens.g0
+  const keRange = $('[data-sens-ke]', box)
+  const gRange = $('[data-sens-g]', box)
+  const priceEl = $('[data-sens-price]', box)
+  priceEl.dataset.figure = priceEl.textContent
+
+  const paint = () => {
+    const out = sensLookup(ki, gi)
+    setFigure(priceEl, out.price)
+    $('[data-sens-delta]', box).textContent = out.delta
+    const tag = $('[data-sens-tag]', box)
+    tag.textContent = c[{ buy: 'sensBuy', hold: 'sensHold', sell: 'sensSell' }[out.rating]]
+    tag.className = `sens__tag is-${out.rating}`
+    $('[data-sens-ke-val]', box).textContent = fmtKe(ke[ki])
+    $('[data-sens-g-val]', box).textContent = fmtG(g[gi])
+    keRange.value = String(ki)
+    gRange.value = String(gi)
+    $$('[data-sens-cell]', box).forEach((cell) => {
+      cell.classList.toggle('is-on', Number(cell.dataset.ke) === ki && Number(cell.dataset.g) === gi)
+    })
+    $('[data-sens-warn]', box).hidden = !out.warn
+  }
+
+  keRange.addEventListener('input', () => {
+    ki = Number(keRange.value)
+    paint()
+  })
+  gRange.addEventListener('input', () => {
+    gi = Number(gRange.value)
+    paint()
+  })
+  $$('[data-sens-ke-d]', box).forEach((btn) => {
+    btn.addEventListener('click', () => {
+      ki = Math.min(ke.length - 1, Math.max(0, ki + Number(btn.dataset.sensKeD)))
+      paint()
+    })
+  })
+  $$('[data-sens-g-d]', box).forEach((btn) => {
+    btn.addEventListener('click', () => {
+      gi = Math.min(g.length - 1, Math.max(0, gi + Number(btn.dataset.sensGD)))
+      paint()
+    })
+  })
+  $$('[data-sens-cell]', box).forEach((cell) => {
+    cell.addEventListener('click', () => {
+      ki = Number(cell.dataset.ke)
+      gi = Number(cell.dataset.g)
+      paint()
+    })
+  })
+}
+
+function bindRewrite(root) {
+  const frame = $('[data-rewrite-frame]', root)
+  if (!frame) return
+  const before = $('[data-rewrite-before]', root)
+  const handle = $('[data-rewrite-handle]', root)
+  let pct = 50
+  const set = (p) => {
+    pct = Math.min(100, Math.max(0, p))
+    before.style.width = `${pct}%`
+    handle.style.left = `${pct}%`
+    handle.setAttribute('aria-valuenow', String(Math.round(pct)))
+  }
+  const fromX = (x) => {
+    const r = frame.getBoundingClientRect()
+    set(((x - r.left) / r.width) * 100)
+  }
+  const onMove = (e) => {
+    if (handle.hasPointerCapture(e.pointerId)) fromX(e.clientX)
+  }
+  handle.addEventListener('pointerdown', (e) => {
+    e.preventDefault()
+    handle.setPointerCapture(e.pointerId)
+  })
+  handle.addEventListener('pointermove', onMove)
+  frame.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('[data-rewrite-handle]')) return
+    fromX(e.clientX)
+    handle.setPointerCapture(e.pointerId)
+  })
+  frame.addEventListener('pointermove', onMove)
+  handle.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); set(pct - 5) }
+    if (e.key === 'ArrowRight') { e.preventDefault(); set(pct + 5) }
+    if (e.key === 'Home') { e.preventDefault(); set(0) }
+    if (e.key === 'End') { e.preventDefault(); set(100) }
   })
 }
 
@@ -472,6 +659,7 @@ function renderCase() {
         ${widgetHtml}
       </aside>` : ''}
       <div class="d-text">
+        ${w.id === 'resumeai' ? widgetRewrite(c) : ''}
         ${c.sections.map((s) => `<div class="d-sec"><h3>${esc(s.h)}</h3><p>${esc(s.p)}</p></div>`).join('')}
       </div>
     </section>
