@@ -51,6 +51,7 @@ function applyCopy() {
   renderTicker()
   renderFigures()
   renderWork()
+  renderNow()
   renderPractice()
   renderSkills()
   setPreview(state.work, true)
@@ -243,20 +244,47 @@ function renderFigures() {
     .join('')
 }
 
+function renderNow() {
+  const c = t()
+  const root = $('[data-now]')
+  if (!root || !c.nowItems) return
+  root.innerHTML = `<div class="now__head">
+      <p class="eyebrow">${esc(c.nowEyebrow)}</p>
+      <p class="now__date">${esc(c.nowUpdated)}</p>
+    </div>
+    <ol class="now__list">
+      ${c.nowItems.map((line, i) => `<li><span>0${i + 1}</span><p>${esc(line)}</p></li>`).join('')}
+    </ol>`
+}
+
 function renderWork() {
-  $('[data-work-list]').innerHTML = works
-    .map((w, i) => {
-      const c = w[state.lang]
-      return `<li data-reveal style="--i:${i + 2}">
-        <button class="work-item ${i === state.work ? 'is-on' : ''}" type="button" data-work="${i}" data-cursor="Open">
+  const featured = []
+  const more = []
+  works.forEach((w, i) => {
+    const c = w[state.lang]
+    const on = i === state.work ? 'is-on' : ''
+    if (w.tier === 'more') {
+      more.push(`<li data-reveal style="--i:${i + 2}">
+        <button class="work-more ${on}" type="button" data-work="${i}" data-cursor="Open">
+          <span class="no">${w.no}</span>
+          <span class="work-more__name">${esc(c.title)}</span>
+          <span class="work-more__course">${esc(c.course || '')}</span>
+          <span class="work-more__line">${esc(c.preview)}</span>
+        </button>
+      </li>`)
+      return
+    }
+    featured.push(`<li data-reveal style="--i:${i + 2}">
+        <button class="work-item ${on}" type="button" data-work="${i}" data-cursor="Open">
           <span class="no">${w.no}</span>
           <span class="title">${esc(c.title)}</span>
           <span class="kind">${esc(c.kind)}</span>
           <span class="work-item__rule" aria-hidden="true"></span>
         </button>
-      </li>`
-    })
-    .join('')
+      </li>`)
+  })
+  $('[data-work-featured]').innerHTML = featured.join('')
+  $('[data-work-more]').innerHTML = more.join('')
 }
 
 // Digits roll from the previous glyph; everything else just swaps.
