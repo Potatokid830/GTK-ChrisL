@@ -283,7 +283,6 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify({
         model: 'claude-haiku-5-5',
         max_tokens: 400,
-        temperature: 0.3,
         stream: true,
         system: knowledge,
         messages,
