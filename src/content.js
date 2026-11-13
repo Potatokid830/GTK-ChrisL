@@ -26,7 +26,7 @@ export const copy = {
     heroLead:
       "Third-year Quantitative Finance student at SMU, from Shenzhen and based in Singapore. Currently interning in corporate banking at Bank of China (Singapore), and into vibe coding — building things like this site. Outside that: films, basketball, and DJing hip-hop sets on the side.",
     heroNow: "Currently",
-    heroNowBody: "Relationship Manager Intern, Global Corporate Banking, Bank of China (Singapore) · Aug 2026 – Present",
+    heroNowBody: "Relationship Manager Intern, Global Corporate Banking, Bank of China (Singapore) · Aug 2026 – Nov 2026",
     heroCtaWork: "View projects",
     heroCtaNote: "Open the first project",
     aboutEyebrow: "02 — About",
@@ -131,7 +131,7 @@ export const copy = {
     aiPresets: [
       {
         q: "What does he do at Bank of China?",
-        a: "Chris has been a Relationship Manager intern in Global Corporate Banking at Bank of China (Singapore) since August 2026. He supports relationship managers with credit analysis, industry research and client onboarding: updating credit write-ups, writing news, risk and industry briefs, and running KYC checks. One public example is an anonymised credit case on why a company's investment income swung to a loss. Client names and amounts are not disclosed.",
+        a: "Chris is a Relationship Manager intern in Global Corporate Banking at Bank of China (Singapore), from August to 27 November 2026. He supports relationship managers with credit analysis, industry research and client onboarding: updating credit write-ups, writing news, risk and industry briefs, and running KYC checks. One public example is an anonymised credit case on why a company's investment income swung to a loss. Client names and amounts are not disclosed.",
       },
       {
         q: "Why BUY on Heineken?",
@@ -171,7 +171,7 @@ export const copy = {
     heroLead:
       "新加坡管理大学量化金融大三，深圳人，现居新加坡。目前在中国银行新加坡分行做公司金融实习，也喜欢钻研 vibe coding，比如这个网站。此外还爱看电影、打篮球，也是个兼职 hip-hop DJ。",
     heroNow: "目前",
-    heroNowBody: "中国银行（新加坡分行）环球公司金融部 · 客户经理实习生 · 2026.08 – 至今",
+    heroNowBody: "中国银行（新加坡分行）环球公司金融部 · 客户经理实习生 · 2026.08 – 2026.11",
     heroCtaWork: "查看项目",
     heroCtaNote: "打开第一个项目",
     aboutEyebrow: "02 — 关于我",
@@ -274,7 +274,7 @@ export const copy = {
     aiPresets: [
       {
         q: "他在中行做什么？",
-        a: "Chris 从 2026 年 8 月起在中国银行新加坡分行环球公司金融部做客户经理实习生，协助客户经理做授信分析、行业研究和企业开户：更新授信报告、撰写新闻与风险简报和行业报告，以及 KYC 尽调。公开的例子是一个已匿名的信贷分析案例，拆解某公司投资收益为什么由盈转亏。客户名称和金额都不公开。",
+        a: "Chris 在中国银行新加坡分行环球公司金融部做客户经理实习生，实习期为 2026 年 8 月至 11 月 27 日，协助客户经理做授信分析、行业研究和企业开户：更新授信报告、撰写新闻与风险简报和行业报告，以及 KYC 尽调。公开的例子是一个已匿名的信贷分析案例，拆解某公司投资收益为什么由盈转亏。客户名称和金额都不公开。",
       },
       {
         q: "喜力为什么给 BUY？",
@@ -299,7 +299,7 @@ export const experience = [
       role: "Relationship Manager Intern",
       org: "Bank of China (Singapore Branch)",
       unit: "Global Corporate Banking",
-      dates: "Aug 2026 – Present",
+      dates: "Aug 2026 – Nov 2026",
       place: "Singapore",
       lead: "Supported relationship managers in Global Corporate Banking with credit analysis, industry research and client onboarding. All reports written in English.",
       groups: [
@@ -335,7 +335,7 @@ export const experience = [
       role: "客户经理实习生",
       org: "中国银行（新加坡分行）",
       unit: "环球公司金融部",
-      dates: "2026.08 – 至今",
+      dates: "2026.08 – 2026.11",
       place: "新加坡",
       lead: "协助环球公司金融部的客户经理完成授信分析、行业研究和企业开户工作，所有报告均以英文撰写。",
       groups: [
