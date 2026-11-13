@@ -48,7 +48,7 @@ export const copy = {
     aboutSchool: "Singapore Management University · Lee Kong Chian School of Business · Class of 2028",
     workEyebrow: "03 — Projects",
     workTitle: "Projects",
-    workHint: "Four pieces of coursework, two personal projects and one internship case. Click one to open it.",
+    workHint: "Four pieces of coursework, three personal projects, one event I ran and one internship case. Click one to open it.",
     workFeatured: "Featured",
     workMore: "More projects",
     workOpen: "Open project",
@@ -193,7 +193,7 @@ export const copy = {
     aboutSchool: "新加坡管理大学 · 李光前商学院 · 2028 届",
     workEyebrow: "03 — 项目",
     workTitle: "项目",
-    workHint: "四份课程作品、两个个人项目和一个实习案例。点开任意一个查看。",
+    workHint: "四份课程作品、三个个人项目、一场自办活动和一个实习案例。点开任意一个查看。",
     workFeatured: "精选",
     workMore: "更多项目",
     workOpen: "打开项目",
@@ -875,7 +875,6 @@ const allWorks = [
   {
     id: "fireworks",
     slug: "fireworks",
-    draft: true,
     widget: null,
     slides: [{ n: 1, src: "./work/fireworks-cover.jpg" }],
     en: {
@@ -948,14 +947,13 @@ const allWorks = [
   {
     id: "hiphop",
     slug: "hiphop-night",
-    draft: true,
     widget: null,
     slides: [{ n: 1, src: "./work/hiphop-cover.jpg" }],
     en: {
       title: "Chinese Hip-hop Theme Night",
       subtitle: "Sentosa · Organiser & DJ",
       cmdk: "Chinese hip-hop night",
-      keywords: "hip-hop hiphop dj event sentosa",
+      keywords: "hip-hop hiphop dj event sentosa 说唱",
       kind: "Event",
       course: "Organiser & DJ",
       dek: "Came up with the idea of a Chinese hip-hop night, pitched it to a club on Sentosa and ran it myself, as both the organiser and the DJ. It was the first time I made money entirely from scratch on my own.",
