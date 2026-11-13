@@ -54,7 +54,7 @@ body {
 }
 html[lang="zh-Hans"] :is(
   .hero__lead, .hero__now, .about__body, .contact__body, .offhours__body, .bball__body,
-  .practice-card .lead, .practice-card li, .d-dek, .d-sec p, .fourp p, .sens__warn, .cmdk__msg,
+  .practice-card .lead, .practice-card li, .d-dek, .d-sec p, .d-list li, .fourp p, .sens__warn, .cmdk__msg,
   .now__list p
 ) { line-height: 1.75; }
 body.is-case, body.is-loading { overflow: hidden; }
@@ -188,6 +188,8 @@ main { padding-left: var(--rail); padding-top: var(--top); }
 .about { border-bottom: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2rem 3rem; align-items: end; }
 .about__text { min-width: 0; }
 .about__text .about__body { margin-bottom: 0; }
+.about__body p { margin: 0 0 1em; }
+.about__body p:last-child { margin-bottom: 0; }
 /* school mark: no frame, just the logo with a hairline and caption, echoing the figures grid below */
 .about__school { margin: 0; justify-self: end; align-self: end; width: clamp(15rem, 24vw, 21rem); padding: 0 0 0.2rem; display: grid; gap: 1.1rem; }
 .about__school img { display: block; width: 100%; height: auto; }
@@ -273,6 +275,8 @@ main { padding-left: var(--rail); padding-top: var(--top); }
 .practice-card ul { margin: 0; padding: 0; list-style: none; max-width: 50rem; }
 .practice-card li { position: relative; padding: 0.55rem 0 0.55rem 1.1rem; border-top: 1px solid rgba(241, 236, 227, 0.12); color: color-mix(in srgb, var(--on-dark) 82%, transparent); }
 .practice-card li::before { content: "\2013"; position: absolute; left: 0; color: var(--on-dark); }
+.practice-group { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--on-dark) 60%, transparent); margin: 1.6rem 0 0.5rem; }
+.practice-card .lead + .practice-group { margin-top: 0.4rem; }
 
 /* DJ interlude: full-bleed still from NYE, type on a left scrim. No blend modes. */
 .offhours {
@@ -399,6 +403,11 @@ main { padding-left: var(--rail); padding-top: var(--top); }
 .d-sec:last-child { border-bottom: 1px solid var(--line); }
 .d-sec h3 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; margin: 0.25rem 0 0; font-weight: 500; }
 .d-sec p { margin: 0; color: var(--ink-2); font-size: 1.02rem; line-height: 1.6; max-width: 42rem; text-wrap: pretty; }
+.d-sec p + .d-list { margin-top: 0.8rem; }
+.d-list { margin: 0; padding: 0; list-style: none; max-width: 42rem; }
+.d-list li { position: relative; padding: 0.45rem 0 0.45rem 1.1rem; border-top: 1px solid var(--line); color: var(--ink-2); font-size: 1.02rem; line-height: 1.6; text-wrap: pretty; }
+.d-list li:first-child { border-top: 0; padding-top: 0; }
+.d-list li::before { content: "\2013"; position: absolute; left: 0; color: var(--ink); }
 
 /* widgets */
 .widget { margin: 0 0 0.5rem; padding: 1.2rem 0 1.4rem; border-top: 1px solid var(--ink); }

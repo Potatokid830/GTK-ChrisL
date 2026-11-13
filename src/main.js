@@ -1,6 +1,7 @@
 // ASCII only in this file. All visible copy lives in content.js.
 import { copy, experience, heinekenSens, skills, works } from './content.js'
 
+const FEATURED_COUNT = 4
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
 // Hidden start states in the CSS are scoped to html.js, so nothing stays invisible without JS.
@@ -50,6 +51,7 @@ function applyCopy() {
   renderRail()
   renderTicker()
   renderFigures()
+  renderAbout()
   renderWork()
   renderNow()
   renderPractice()
@@ -244,6 +246,12 @@ function renderFigures() {
     .join('')
 }
 
+function renderAbout() {
+  const root = $('[data-about-body]')
+  if (!root) return
+  root.innerHTML = [].concat(t().aboutBody).map((p) => `<p>${esc(p)}</p>`).join('')
+}
+
 function renderNow() {
   const c = t()
   const root = $('[data-now]')
@@ -263,12 +271,12 @@ function renderWork() {
   works.forEach((w, i) => {
     const c = w[state.lang]
     const on = i === state.work ? 'is-on' : ''
-    if (w.tier === 'more') {
+    if (i >= FEATURED_COUNT) {
       more.push(`<li data-reveal style="--i:${i + 2}">
         <button class="work-more ${on}" type="button" data-work="${i}" data-cursor="Open">
           <span class="no">${w.no}</span>
           <span class="work-more__name">${esc(c.title)}</span>
-          <span class="work-more__course">${esc(c.course || '')}</span>
+          <span class="work-more__course">${esc(c.course || c.kind)}</span>
           <span class="work-more__line">${esc(c.preview)}</span>
         </button>
       </li>`)
@@ -356,6 +364,10 @@ function setPreview(i, force = false) {
   }, 460)
 }
 
+function bulletList(items, cls = '') {
+  return `<ul${cls ? ` class="${cls}"` : ''}>${items.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>`
+}
+
 function renderPractice() {
   $('[data-practice]').innerHTML = experience
     .map((job, i) => {
@@ -366,7 +378,9 @@ function renderPractice() {
           <h3>${esc(c.role)}</h3>
           <p class="org">${esc(c.org)} &middot; ${esc(c.unit)}</p>
           <p class="lead">${esc(c.lead)}</p>
-          <ul>${c.points.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>
+          ${c.groups
+            ? c.groups.map((g) => `<h4 class="practice-group">${esc(g.h)}</h4>${bulletList(g.items)}`).join('')
+            : bulletList(c.points)}
           ${c.more ? `<button class="practice-more" type="button" data-open-slug="${esc(c.moreSlug)}">${esc(c.more)}</button>` : ''}
         </div>
       </article>`
@@ -761,7 +775,7 @@ function renderCase() {
   const w = works[state.caseIdx]
   const c = w[state.lang]
   const body = $('[data-case-body]')
-  $('[data-case-count]').textContent = `${w.no} / 0${works.length}  \u00B7  ${c.kind}`
+  $('[data-case-count]').textContent = `${w.no} / ${String(works.length).padStart(2, '0')}  \u00B7  ${c.kind}`
   $('[data-case-prev]').disabled = state.caseIdx === 0
   $('[data-case-next]').disabled = state.caseIdx === works.length - 1
 
@@ -806,7 +820,9 @@ function renderCase() {
       </aside>` : ''}
       <div class="d-text">
         ${w.id === 'resumeai' ? widgetRewrite(c) : ''}
-        ${c.sections.map((s) => `<div class="d-sec"><h3>${esc(s.h)}</h3><p>${esc(s.p)}</p></div>`).join('')}
+        ${c.sections
+          .map((s) => `<div class="d-sec"><h3>${esc(s.h)}</h3><div class="d-sec__body">${s.p ? `<p>${esc(s.p)}</p>` : ''}${s.items ? bulletList(s.items, 'd-list') : ''}</div></div>`)
+          .join('')}
       </div>
     </section>
   `
@@ -1174,13 +1190,10 @@ function cmdkCommands() {
     { group: c.cmdkJump, id: 'go-practice', label: c.cmdkPractice, hint: '04', run: () => jumpTo('#practice') },
     { group: c.cmdkJump, id: 'go-index', label: c.cmdkSkills, hint: '05', run: () => jumpTo('#index') },
     { group: c.cmdkJump, id: 'go-contact', label: c.cmdkContact, hint: '06', run: () => jumpTo('#contact') },
-    { group: c.cmdkOpen, id: 'open-heineken', label: c.cmdkHeineken, hint: '01', run: () => openFromCmdk(0) },
-    { group: c.cmdkOpen, id: 'open-credit', label: c.cmdkCredit, hint: '02', run: () => openFromCmdk(1) },
-    { group: c.cmdkOpen, id: 'open-resumeai', label: c.cmdkResumeai, hint: '03', run: () => openFromCmdk(2) },
-    { group: c.cmdkOpen, id: 'open-zzrs', label: c.cmdkZzrs, hint: '04', run: () => openFromCmdk(3) },
-    { group: c.cmdkOpen, id: 'open-telco', label: c.cmdkTelco, hint: '05', run: () => openFromCmdk(4) },
-    { group: c.cmdkOpen, id: 'open-zeroq', label: c.cmdkZeroq, hint: '06', run: () => openFromCmdk(5) },
-    { group: c.cmdkOpen, id: 'open-jetstar', label: c.cmdkJetstar, hint: '07', run: () => openFromCmdk(6) },
+    ...works.map((w, i) => {
+      const p = w[state.lang]
+      return { group: c.cmdkOpen, id: `open-${w.slug}`, label: p.cmdk || p.title, keywords: p.keywords || '', hint: w.no, run: () => openFromCmdk(i) }
+    }),
     { group: c.cmdkAct, id: 'act-resume', label: c.cmdkResume, run: () => { closeCmdk(); $('[data-resume-link]')?.click() } },
     { group: c.cmdkAct, id: 'act-email', label: c.cmdkCopyEmail, run: () => copyFromCmdk('junyan.lin.2024@business.smu.edu.sg') },
     { group: c.cmdkAct, id: 'act-wechat', label: c.cmdkCopyWechat, run: () => copyFromCmdk('CHRIS_LJY_ATB') },
@@ -1212,7 +1225,12 @@ function filteredCmdk() {
   return cmdkCommands()
     .map((item) => ({
       item,
-      score: Math.max(fuzzyScore(q, item.label), fuzzyScore(q, item.group) * 0.3, fuzzyScore(q, item.hint || '') * 0.2),
+      score: Math.max(
+        fuzzyScore(q, item.label),
+        fuzzyScore(q, item.keywords || '') * 0.9,
+        fuzzyScore(q, item.group) * 0.3,
+        fuzzyScore(q, item.hint || '') * 0.2,
+      ),
     }))
     .filter((row) => row.score > 0)
     .sort((a, b) => b.score - a.score)
