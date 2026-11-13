@@ -50,11 +50,11 @@ function missingEnvNames() {
 let knowledge = ''
 let knowledgeError = ''
 try {
-  knowledge = readFileSync(join(process.cwd(), 'ai', 'knowledge.md'), 'utf8')
+  knowledge = readFileSync(join(process.cwd(), 'api', '_data', 'knowledge.md'), 'utf8')
 } catch (err) {
   const first = readError(err)
   try {
-    knowledge = readFileSync(join(__dirname, '..', 'ai', 'knowledge.md'), 'utf8')
+    knowledge = readFileSync(join(__dirname, '_data', 'knowledge.md'), 'utf8')
   } catch (err2) {
     knowledge = ''
     knowledgeError = `${first}; ${readError(err2)}`

@@ -11,7 +11,9 @@ src/styles.css        styles (ASCII only)
 src/main.js           rendering, language toggle, project overlay, interactions (ASCII only)
 src/content.js        all English / Chinese copy, experience, skills, projects (UTF-8)
 work/img/<id>/01.jpg  cover image for each project, 1200 x 675
-Junyan_Lin_Resume.pdf resume linked from the top bar
+Junyan_Lin_Resume_web.pdf  resume linked from the top bar (phone-free export)
+api/chat.js           AI assistant endpoint
+api/_data/knowledge.md  AI assistant knowledge base (bundled into api/chat.js, not served)
 favicon.svg
 ```
 

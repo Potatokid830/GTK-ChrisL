@@ -2,7 +2,7 @@
   "regions": ["sin1"],
   "functions": {
     "api/chat.js": {
-      "includeFiles": "ai/knowledge.md",
+      "includeFiles": "api/_data/knowledge.md",
       "maxDuration": 30
     }
   }

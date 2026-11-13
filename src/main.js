@@ -31,6 +31,7 @@ const state = {
   aiTurns: [],
   aiType: 0,
   heroIn: true,
+  pageEnd: false,
 }
 
 const $ = (sel, root = document) => root.querySelector(sel)
@@ -175,7 +176,7 @@ function bindPortrait() {
   else window.addEventListener('scroll', onScroll, { passive: true })
 }
 
-// NYE still drifts a little against the scroll — transform only, no blend.
+// NYE still drifts a little against the scroll - transform only, no blend.
 function bindOffhours() {
   const sec = $('.offhours')
   const img = $('[data-offhours-bg]')
@@ -1273,6 +1274,8 @@ function syncCmdkCopy() {
   if (tog) tog.setAttribute('aria-label', tog.getAttribute('aria-pressed') === 'true' ? t().djPause : t().djPlay)
   const fab = $('[data-ask-fab]')
   if (fab) fab.setAttribute('aria-label', t().askAi)
+  const resume = $('[data-resume-link]')
+  if (resume) resume.setAttribute('aria-label', t().cmdkResume)
 }
 
 function cmdkFocusables() {
@@ -1365,7 +1368,7 @@ function openCmdkAi(from) {
 function syncAskFab() {
   const fab = $('[data-ask-fab]')
   if (!fab) return
-  fab.hidden = !state.ready || state.heroIn || state.caseIdx != null || state.cmdkOpen
+  fab.hidden = !state.ready || state.heroIn || state.pageEnd || state.caseIdx != null || state.cmdkOpen
 }
 
 function bindAskFab() {
@@ -1373,6 +1376,17 @@ function bindAskFab() {
   const hero = $('.hero')
   if (!fab) return
   fab.addEventListener('click', () => openCmdkAi(fab))
+  // Contact is the last section; hide the button there so it never sits on the final lines of text.
+  const end = $('#contact')
+  if (end) {
+    new IntersectionObserver(
+      (entries) => {
+        state.pageEnd = entries.some((en) => en.isIntersecting)
+        syncAskFab()
+      },
+      { rootMargin: '0px 0px -20% 0px' },
+    ).observe(end)
+  }
   if (!hero) {
     state.heroIn = false
     syncAskFab()
